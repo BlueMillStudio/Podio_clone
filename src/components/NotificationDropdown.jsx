@@ -1,3 +1,4 @@
+// NotificationDropdown.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 
@@ -5,7 +6,7 @@ const NotificationDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const toggleDropdown = () => setIsOpen(!isOpen);
+    const toggleDropdown = () => setIsOpen((prev) => !prev);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -19,28 +20,33 @@ const NotificationDropdown = () => {
     }, []);
 
     return (
-        <div className="relative flex items-center" ref={dropdownRef}>
+        <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="hover:text-gray-200 focus:outline-none flex items-center justify-center"
+                className="hover:text-gray-200 focus:outline-none p-1"
             >
                 <Bell className="h-5 w-5" />
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-10 text-gray-800">
-                    <div className="p-4 border-b flex justify-between items-center">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-20 text-gray-800">
+                    <div className="p-4 border-b">
                         <h3 className="font-semibold">Notifications</h3>
-                        <div>
-                            <button className="text-teal-600 hover:text-teal-700 mr-2">All</button>
-                            <button className="text-teal-600 hover:text-teal-700">Unread</button>
-                        </div>
+                        <p className="text-sm text-gray-600">You have 3 new notifications</p>
                     </div>
-                    <div className="p-4 text-center text-gray-500">
-                        <p>No new notifications.</p>
-                    </div>
+                    <ul className="py-2">
+                        <MenuItem
+                            text="Notification 1"
+                        />
+                        <MenuItem
+                            text="Notification 2"
+                        />
+                        <MenuItem
+                            text="Notification 3"
+                        />
+                    </ul>
                     <div className="p-4 border-t flex justify-between items-center">
-                        <button className="text-teal-600 hover:text-teal-700">Refresh</button>
+                        <button className="text-teal-600 hover:text-teal-700">Mark all as read</button>
                         <button className="text-teal-600 hover:text-teal-700">Settings</button>
                     </div>
                 </div>
@@ -48,5 +54,13 @@ const NotificationDropdown = () => {
         </div>
     );
 };
+
+const MenuItem = ({ text }) => (
+    <li>
+        <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+            {text}
+        </button>
+    </li>
+);
 
 export default NotificationDropdown;
