@@ -2,7 +2,7 @@ import React from 'react';
 import { Bell, HelpCircle, Search, User, Menu, MessageSquare } from 'lucide-react';
 import { Input } from './ui/input';
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar, toggleChatBar }) => {
   return (
     <nav className="bg-turquoise text-white px-4 py-2.5 flex items-center justify-between">
       <div className="flex items-center flex-1">
@@ -10,9 +10,9 @@ const Navbar = ({ toggleSidebar }) => {
           <Menu className="h-6 w-6" />
         </button>
         <img src="/placeholder.svg" alt="Podio" className="h-8 w-auto mr-4" />
-        <Input 
-          type="search" 
-          placeholder="Search..." 
+        <Input
+          type="search"
+          placeholder="Search..."
           className="max-w-sm bg-turquoise-light text-gray-800 placeholder-gray-500"
           startAdornment={<Search className="h-4 w-4 text-gray-500" />}
         />
@@ -24,7 +24,7 @@ const Navbar = ({ toggleSidebar }) => {
         <button className="hover:text-gray-200">
           <Bell className="h-6 w-6" />
         </button>
-        <button className="hover:text-gray-200">
+        <button className="hover:text-gray-200" onClick={toggleChatBar}>
           <MessageSquare className="h-6 w-6" />
         </button>
         <button className="hover:text-gray-200">
