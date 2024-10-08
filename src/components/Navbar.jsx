@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Input } from "./ui/input";
 import HelpSidebar from "./HelpSidebar";
+import ProfileDropdown from "./ProfileDropdown";
 
 const Navbar = ({ toggleSidebar }) => {
   const [isHelpSidebarOpen, setIsHelpSidebarOpen] = useState(false);
@@ -42,9 +43,7 @@ const Navbar = ({ toggleSidebar }) => {
           <button className="hover:text-gray-200">
             <MessageSquare className="h-6 w-6" />
           </button>
-          <button className="hover:text-gray-200">
-            <User className="h-6 w-6" />
-          </button>
+          <ProfileDropdown />
         </div>
       </nav>
       <HelpSidebar isOpen={isHelpSidebarOpen} onClose={closeHelpSidebar} />
