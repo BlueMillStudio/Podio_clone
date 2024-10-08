@@ -1,18 +1,17 @@
-import { X } from "lucide-react";
+import React from 'react';
+import { X } from 'lucide-react';
 import { Input } from "./ui/input";
 
-const HelpSidebar = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
+const HelpSidebar = ({ isOpen, toggleHelpSidebar }) => {
   return (
-    <div className="fixed inset-y-0 right-0 w-80 bg-white shadow-lg z-50 overflow-y-auto">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Help & Support</h2>
-          <button onClick={onClose}>
-            <X className="h-5 w-5 text-gray-500" />
-          </button>
-        </div>
+    <aside className={`bg-white w-80 min-h-screen flex flex-col border-l border-gray-200 fixed top-0 right-0 transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} z-50`}>
+      <div className="p-4 flex justify-between items-center border-b border-gray-200">
+        <h2 className="text-lg font-semibold">Help & Support</h2>
+        <button onClick={toggleHelpSidebar}>
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4">
         <Input
           type="text"
           placeholder="Type your question and hit Enter"
@@ -60,7 +59,7 @@ const HelpSidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 
