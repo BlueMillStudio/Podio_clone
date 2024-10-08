@@ -1,3 +1,4 @@
+// ProfileDropdown.jsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   User,
@@ -12,7 +13,7 @@ const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -29,13 +30,13 @@ const ProfileDropdown = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="hover:text-gray-200 focus:outline-none"
+        className="hover:text-gray-200 focus:outline-none p-1"
       >
         <User className="h-6 w-6" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 text-gray-800">
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-20 text-gray-800">
           <div className="p-4 border-b">
             <p className="font-semibold">dilsha thathsarani</p>
             <p className="text-sm text-gray-600">Complete your profile</p>

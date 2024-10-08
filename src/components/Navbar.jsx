@@ -1,3 +1,4 @@
+// Navbar.jsx
 import React, { useState } from "react";
 import {
   HelpCircle,
@@ -17,12 +18,13 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const toggleSearch = () => {
-    setIsSearchExpanded(!isSearchExpanded);
+    setIsSearchExpanded((prev) => !prev);
   };
 
   return (
     <TooltipProvider>
       <nav className="bg-teal-400 text-white px-4 py-3 flex items-center justify-between relative h-16">
+        {/* Left Section */}
         <div className="flex items-center space-x-2">
           <NavbarIcon icon={<Menu className="h-5 w-5" />} tooltip="Toggle Sidebar" onClick={toggleSidebar} />
           <NavbarIcon icon={<Users className="h-5 w-5" />} tooltip="Connections" />
@@ -30,10 +32,12 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
           <NavbarIcon icon={<CheckSquare className="h-5 w-5" />} tooltip="Tasks" />
         </div>
 
+        {/* Center Logo */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <img src="/placeholder.svg" alt="Podio" className="h-8 w-auto" />
         </div>
 
+        {/* Right Section */}
         <div className="flex items-center space-x-2">
           {isSearchExpanded && (
             <Input
@@ -44,7 +48,10 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
           )}
           <NavbarIcon icon={<Search className="h-5 w-5" />} tooltip="Search" onClick={toggleSearch} />
           <NavbarIcon icon={<HelpCircle className="h-5 w-5" />} tooltip="Help" onClick={toggleHelpSidebar} />
-          <NavbarIcon icon={<NotificationDropdown />} tooltip="Notifications" />
+
+          {/* Notification Dropdown placed directly */}
+          <NotificationDropdown />
+
           <NavbarIcon icon={<MessageSquare className="h-5 w-5" />} tooltip="Chat" onClick={toggleChatBar} />
           <ProfileDropdown />
         </div>
