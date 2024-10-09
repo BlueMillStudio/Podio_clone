@@ -1,5 +1,6 @@
 // Navbar.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HelpCircle,
   Search,
@@ -16,9 +17,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 
 const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSearch = () => {
     setIsSearchExpanded((prev) => !prev);
+  };
+
+  const handleCalendarClick = () => {
+    navigate('/calendar');
   };
 
   return (
@@ -28,7 +34,7 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
         <div className="flex items-center space-x-2">
           <NavbarIcon icon={<Menu className="h-5 w-5" />} tooltip="Toggle Sidebar" onClick={toggleSidebar} />
           <NavbarIcon icon={<Users className="h-5 w-5" />} tooltip="Connections" />
-          <NavbarIcon icon={<Calendar className="h-5 w-5" />} tooltip="Calendar" />
+          <NavbarIcon icon={<Calendar className="h-5 w-5" />} tooltip="Calendar" onClick={handleCalendarClick} />
           <NavbarIcon icon={<CheckSquare className="h-5 w-5" />} tooltip="Tasks" />
         </div>
 

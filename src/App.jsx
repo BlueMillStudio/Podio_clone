@@ -1,27 +1,22 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 import Index from "./pages/Index";
-
-const queryClient = new QueryClient();
+import Calendar from "./components/Calendar";
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/employee-network" element={<div>Employee Network</div>} />
-          <Route path="/demo-workspace" element={<div>Demo Workspace</div>} />
-          <Route path="/intranet" element={<div>Intranet</div>} />
-          <Route path="/project-management" element={<div>Project Management</div>} />
-          <Route path="/sales-management" element={<div>Sales Management</div>} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <BrowserRouter>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Index />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/employee-network" element={<div>Employee Network</div>} />
+        <Route path="/demo-workspace" element={<div>Demo Workspace</div>} />
+        <Route path="/intranet" element={<div>Intranet</div>} />
+        <Route path="/project-management" element={<div>Project Management</div>} />
+        <Route path="/sales-management" element={<div>Sales Management</div>} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
 );
 
 export default App;
