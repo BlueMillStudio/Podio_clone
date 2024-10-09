@@ -15,12 +15,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import NotificationDropdown from "./NotificationDropdown";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Button } from "./ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
+
 
 const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar, handleLogout }) => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -90,22 +85,12 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar, handleLogout 
             />
           )}
           <NavbarIcon icon={<Search className="h-5 w-5" />} tooltip="Search" onClick={toggleSearch} />
-          <NavbarIcon icon={<HelpCircle className="h-5 w-5" />} tooltip="Help" onClick={toggleHelpSidebar} />
-          <NotificationDropdown />
-          <NavbarIcon icon={<MessageSquare className="h-5 w-5" />} tooltip="Chat" onClick={toggleChatBar} />
-          <NavbarIcon
-            icon={<Search className="h-5 w-5" />}
-            tooltip="Search"
-            onClick={toggleSearch}
-          />
+
           <NavbarIcon
             icon={<HelpCircle className="h-5 w-5" />}
             tooltip="Help"
             onClick={toggleHelpSidebar}
           />
-
-          {/* Notification Dropdown placed directly */}
-          <NotificationDropdown />
 
           <NavbarIcon
             icon={<MessageSquare className="h-5 w-5" />}
