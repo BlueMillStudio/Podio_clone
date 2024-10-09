@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import ChatBar from './ChatBar';
@@ -22,8 +23,8 @@ const Layout = ({ children }) => {
           toggleChatBar={toggleChatBar}
           toggleHelpSidebar={toggleHelpSidebar}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6">
-          {children}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-white">
+          <Outlet />
         </main>
       </div>
       <ChatBar isOpen={isChatBarOpen} toggleChatBar={toggleChatBar} />
