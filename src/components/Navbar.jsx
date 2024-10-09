@@ -1,4 +1,3 @@
-// Navbar.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -27,20 +26,26 @@ const Navbar = ({ toggleSidebar, toggleChatBar, toggleHelpSidebar }) => {
     navigate('/calendar');
   };
 
+  const handleConnectionsClick = () => {
+    navigate('/connections');
+  };
+
   return (
     <TooltipProvider>
       <nav className="bg-teal-400 text-white px-4 py-3 flex items-center justify-between relative h-16">
         {/* Left Section */}
         <div className="flex items-center space-x-2">
           <NavbarIcon icon={<Menu className="h-5 w-5" />} tooltip="Toggle Sidebar" onClick={toggleSidebar} />
-          <NavbarIcon icon={<Users className="h-5 w-5" />} tooltip="Connections" />
+          <NavbarIcon icon={<Users className="h-5 w-5" />} tooltip="Connections" onClick={handleConnectionsClick} />
           <NavbarIcon icon={<Calendar className="h-5 w-5" />} tooltip="Calendar" onClick={handleCalendarClick} />
           <NavbarIcon icon={<CheckSquare className="h-5 w-5" />} tooltip="Tasks" />
         </div>
 
         {/* Center Logo */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <img src="/placeholder.svg" alt="Podio" className="h-8 w-auto" />
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex items-center justify-center">
+            <img src="/images/logo.jpg" alt="Company Logo" className="w-8 h-8 object-contain" />
+          </div>
         </div>
 
         {/* Right Section */}
