@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,48 +11,130 @@ import {
   Mail,
   Printer,
   ChevronDown,
+  Plus,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { TimePicker } from "@/components/TimePicker";
 
-const TaskForm = () => (
-  <div className="bg-yellow-50 p-4 mb-4 rounded-md">
-    <div className="flex justify-between items-center mb-2">
-      <p className="text-sm">
-        You can assign tasks to yourself, to co-workers on Podio and to anyone
-        else via email
-      </p>
-      <Button variant="ghost" size="sm">
-        <X className="h-4 w-4" />
-      </Button>
-    </div>
-    <Input className="mb-2" placeholder="Enter a task..." />
-    <Input
-      className="mb-2"
-      placeholder="Pick a connection or type an email address"
-    />
-    <div className="flex space-x-2 mb-2">
-      <Button variant="outline" className="text-gray-500">
-        No due date <ChevronDown className="h-4 w-4 ml-2" />
-      </Button>
-      <Button variant="outline" className="text-gray-500">
-        <Clock className="h-4 w-4 mr-2" />
-        --:--
-      </Button>
+const TaskForm = () => {
+  const [date, setDate] = useState();
+  const [time, setTime] = useState("");
+  const [attachedFile, setAttachedFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileAttach = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAttachedFile(file);
+    }
+  };
+
+  return (
+    <div className="bg-yellow-50 p-4 mb-4 rounded-md">
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-sm">
+          You can assign tasks to yourself, to co-workers on Podio and to anyone
+          else via email
+        </p>
+        <Button variant="ghost" size="sm">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <Input className="mb-2" placeholder="Enter a task..." />
+      <div className="flex mb-2">
+        <Input
+          className="flex-grow mr-2"
+          placeholder="Pick a connection or type an email address"
+        />
+        <Button variant="outline">Address book</Button>
+      </div>
+      <div className="flex space-x-2 mb-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[180px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : <span>No due date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Select
+              onValueChange={(value) =>
+                setDate(value === "custom" ? null : new Date(value))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                <SelectItem value="nextMonday">Next Monday</SelectItem>
+                <SelectItem value="custom">Custom date</SelectItem>
+              </SelectContent>
+            </Select>
+            {date === null && (
+              <CalendarComponent
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            )}
+          </PopoverContent>
+        </Popover>
+        <TimePicker value={time} onChange={setTime} />
+        <Input
+          className="flex-grow"
+          placeholder="Attach this task to any item or workspace..."
+        />
+      </div>
       <Input
-        className="flex-grow"
-        placeholder="Attach this task to any item or workspace..."
+        className="mb-2"
+        placeholder="Enter more information about your task..."
       />
+      <Input className="mb-2" placeholder="Add labels..." />
+      <div className="flex justify-between items-center">
+        <div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <Button variant="outline" onClick={handleFileAttach}>
+            <Paperclip className="h-4 w-4 mr-2" />
+            {attachedFile ? attachedFile.name : "Attach file"}
+          </Button>
+        </div>
+        <Button>Create task</Button>
+      </div>
     </div>
-    <Input
-      className="mb-2"
-      placeholder="Enter more information about your task..."
-    />
-    <Input className="mb-2" placeholder="Add labels..." />
-    <div className="flex justify-between items-center">
-      <Button variant="outline">Attach file</Button>
-      <Button>Create task</Button>
-    </div>
-  </div>
-);
+  );
+};
 
 const TaskList = ({ tasks }) => (
   <div>
@@ -70,7 +152,8 @@ const LabelSection = () => (
   <div className="bg-white p-4 rounded-md">
     <h2 className="text-xl font-semibold mb-4">Labels</h2>
     <Button variant="outline" className="w-full mb-4">
-      + NEW LABEL
+      <Plus className="h-4 w-4 mr-2" />
+      NEW LABEL
     </Button>
     {/* <div className="space-y-2">
       <p>Create a task from anywhere: Hit T on your keyboard</p>
@@ -89,7 +172,6 @@ const LabelSection = () => (
 const PodioTaskManagement = () => {
   const [activeTab, setActiveTab] = useState("my-tasks");
 
-  // Mock data - replace with actual data fetching logic
   const myTasks = [
     { title: "Complete wireframe creation" },
     { title: "Review project proposal" },
