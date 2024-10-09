@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Calendar from "./components/Calendar";
 import Connections from "./pages/Connections";
+import Task from "./components/Task";
 
 const App = () => (
   <BrowserRouter>
@@ -14,8 +15,12 @@ const App = () => (
         <Route path="/employee-network" element={<div>Employee Network</div>} />
         <Route path="/demo-workspace" element={<div>Demo Workspace</div>} />
         <Route path="/intranet" element={<div>Intranet</div>} />
-        <Route path="/project-management" element={<div>Project Management</div>} />
+        <Route
+          path="/project-management"
+          element={<div>Project Management</div>}
+        />
         <Route path="/sales-management" element={<div>Sales Management</div>} />
+        <Route path="/task" element={<Task />} />
       </Route>
     </Routes>
   </BrowserRouter>
