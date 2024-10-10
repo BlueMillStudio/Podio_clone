@@ -1,3 +1,5 @@
+// Register.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -28,8 +30,8 @@ const Register = () => {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Registration successful! Please login.');
-                navigate('/login');
+                localStorage.setItem('token', data.token);
+                navigate('/profile-completion');
             } else {
                 setError(data.message || 'An error occurred during registration');
             }
