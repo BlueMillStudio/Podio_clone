@@ -1,4 +1,4 @@
-// Register.jsx
+// frontend/src/components/Register.jsx
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,16 +12,15 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/register', {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password }),
@@ -30,18 +29,29 @@ const Register = () => {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('token', data.token);
-                navigate('/profile-completion');
+                setIsRegistered(true);
             } else {
                 setError(data.message || 'An error occurred during registration');
             }
         } catch (error) {
             console.error('Error:', error);
             setError('Unable to connect to the server. Please try again later.');
-        } finally {
-            setIsLoading(false);
         }
     };
+
+    if (isRegistered) {
+        return (
+            <Card className="w-full max-w-md mx-auto mt-10">
+                <CardContent>
+                    <Alert>
+                        <AlertDescription>
+                            Registration successful! Please check your email to verify your account.
+                        </AlertDescription>
+                    </Alert>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="w-full max-w-md mx-auto mt-10">
@@ -79,9 +89,7 @@ const Register = () => {
                         />
                     </div>
                     <CardFooter className="flex justify-between mt-6">
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading ? 'Registering...' : 'Register'}
-                        </Button>
+                        <Button type="submit">Register</Button>
                         <Button variant="outline" onClick={() => navigate('/login')}>
                             Back to Login
                         </Button>

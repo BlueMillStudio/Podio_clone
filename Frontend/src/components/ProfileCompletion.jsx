@@ -1,4 +1,4 @@
-// ProfileCompletion.jsx
+// frontend/src/components/ProfileCompletion.jsx
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,19 +19,21 @@ const ProfileCompletion = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         try {
-            const response = await fetch('http://localhost:5000/api/complete-profile', {
+            const response = await fetch('http://localhost:5000/api/profile/complete-profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify({
                     companyName,
                     industry,
                     useCase,
                     organizationSize,
-                    phoneNumber
+                    phoneNumber,
                 }),
             });
 
@@ -42,6 +44,7 @@ const ProfileCompletion = () => {
                 setError(data.message || 'An error occurred while completing your profile');
             }
         } catch (error) {
+            console.error('Error:', error);
             setError('Unable to connect to the server. Please try again later.');
         }
     };
@@ -71,9 +74,9 @@ const ProfileCompletion = () => {
                                 <SelectValue placeholder="Select an industry..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="tech">Technology</SelectItem>
-                                <SelectItem value="finance">Finance</SelectItem>
-                                <SelectItem value="healthcare">Healthcare</SelectItem>
+                                <SelectItem value="Technology">Technology</SelectItem>
+                                <SelectItem value="Finance">Finance</SelectItem>
+                                <SelectItem value="Healthcare">Healthcare</SelectItem>
                                 {/* Add more industries as needed */}
                             </SelectContent>
                         </Select>
@@ -82,9 +85,9 @@ const ProfileCompletion = () => {
                                 <SelectValue placeholder="Select a use case..." />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="projectManagement">Project Management</SelectItem>
-                                <SelectItem value="crm">CRM</SelectItem>
-                                <SelectItem value="hrm">Human Resources</SelectItem>
+                                <SelectItem value="Project Management">Project Management</SelectItem>
+                                <SelectItem value="CRM">CRM</SelectItem>
+                                <SelectItem value="Human Resources">Human Resources</SelectItem>
                                 {/* Add more use cases as needed */}
                             </SelectContent>
                         </Select>
