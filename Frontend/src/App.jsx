@@ -7,7 +7,7 @@ import Connections from "./pages/Connections";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Task from "./components/Task";
-import EmailVerification from "./components/EmailVerification"; // New component
+import VerifyEmail from "./components/VerifyEmail"; // New component
 import ProfileCompletion from "./components/ProfileCompletion"; // New component
 
 const App = () => (
@@ -16,7 +16,7 @@ const App = () => (
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/verify-email/:token" element={<EmailVerification />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Protected routes */}
       <Route element={<Layout />}>
