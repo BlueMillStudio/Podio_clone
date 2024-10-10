@@ -41,13 +41,16 @@ const TaskForm = ({ onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/tasks", {
+      const response = await axios.post("http://localhost:5000/api/tasks", {
         title,
         description,
-        dueDate: date ? format(date, "yyyy-MM-dd") : null,
-        dueTime: time,
-        assignee,
-        attachmentName: attachedFile ? attachedFile.name : null,
+        due_date: date ? format(date, "yyyy-MM-dd") : null,
+        due_time: time || null,
+        status: "pending",
+        creator_id: null, // You might want to replace this with actual user ID if available
+        assignee_id: null, // You might want to replace this with actual assignee ID if available
+        attachment_url: null, // You might want to handle file upload separately
+        attachment_name: attachedFile ? attachedFile.name : null,
       });
       console.log("Task created:", response.data);
       toast.success("Task created successfully");
