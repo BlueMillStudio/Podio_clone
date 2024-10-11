@@ -1,46 +1,65 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import LabelSection from "./LableSection";
 import axios from "axios";
+import { toast } from "sonner";
 
 const PodioTaskManagement = () => {
   const [activeTab, setActiveTab] = useState("my-tasks");
-  const [tasks, setTasks] = useState({
-    myTasks: [],
-    delegatedTasks: [],
-    completedTasks: [],
-    allCompletedTasks: [],
-  });
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     fetchTasks();
+    fetchUsers();
   }, []);
 
   const fetchTasks = async () => {
+    setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/tasks");
-      const allTasks = response.data;
-
-      setTasks({
-        myTasks: allTasks.filter((task) => !task.completed),
-        delegatedTasks: allTasks.filter((task) => task.delegated),
-        completedTasks: allTasks.filter((task) => task.completed),
-        allCompletedTasks: allTasks.filter((task) => task.completed),
+      const response = await axios.get("http://localhost:5000/api/tasks", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
+      setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      toast.error("Failed to fetch tasks. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users. Please try again.");
     }
   };
 
   const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => ({
-      ...prevTasks,
-      myTasks: [...prevTasks.myTasks, newTask],
-    }));
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
+  const handleTaskUpdate = (updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+  };
+
+  const filterTasks = (status) => {
+    return tasks.filter((task) => task.status === status);
   };
 
   return (
@@ -67,28 +86,56 @@ const PodioTaskManagement = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TaskForm onTaskCreated={handleTaskCreated} />
+            <TaskForm onTaskCreated={handleTaskCreated} users={users} />
 
             <TabsContent value="my-tasks">
               <h2 className="text-xl font-semibold mb-2">My Tasks</h2>
-              <TaskList tasks={tasks.myTasks} />
+              {isLoading ? (
+                <p>Loading tasks...</p>
+              ) : (
+                <TaskList
+                  tasks={filterTasks("pending")}
+                  onTaskUpdate={handleTaskUpdate}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="delegated-tasks">
               <h2 className="text-xl font-semibold mb-2">My Delegated Tasks</h2>
-              <TaskList tasks={tasks.delegatedTasks} />
+              {isLoading ? (
+                <p>Loading tasks...</p>
+              ) : (
+                <TaskList
+                  tasks={filterTasks("delegated")}
+                  onTaskUpdate={handleTaskUpdate}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="completed-tasks">
               <h2 className="text-xl font-semibold mb-2">My Completed Tasks</h2>
-              <TaskList tasks={tasks.completedTasks} />
+              {isLoading ? (
+                <p>Loading tasks...</p>
+              ) : (
+                <TaskList
+                  tasks={filterTasks("completed")}
+                  onTaskUpdate={handleTaskUpdate}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="all-completed">
               <h2 className="text-xl font-semibold mb-2">
                 All Completed Tasks
               </h2>
-              <TaskList tasks={tasks.allCompletedTasks} />
+              {isLoading ? (
+                <p>Loading tasks...</p>
+              ) : (
+                <TaskList
+                  tasks={filterTasks("completed")}
+                  onTaskUpdate={handleTaskUpdate}
+                />
+              )}
             </TabsContent>
           </Tabs>
         </div>

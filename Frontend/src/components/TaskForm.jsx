@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar, Paperclip, X } from "lucide-react";
@@ -12,7 +12,22 @@ import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { TimePicker } from "@/components/TimePicker";
 import axios from "axios";
+import LabelInput from "./LabelInput";
 import { toast } from "sonner";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const TaskForm = ({ onTaskCreated }) => {
   const [title, setTitle] = useState("");
@@ -22,6 +37,28 @@ const TaskForm = ({ onTaskCreated }) => {
   const [description, setDescription] = useState("");
   const [attachedFile, setAttachedFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  const [labels, setLabels] = useState([]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/users", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users. Please try again.");
+    }
+  };
 
   const handleFileAttach = () => {
     fileInputRef.current.click();
@@ -38,20 +75,44 @@ const TaskForm = ({ onTaskCreated }) => {
     setDate(selectedDate);
   };
 
+  const handleAssigneeChange = (value) => {
+    setAssignee(value);
+    if (value) {
+      const filtered = users.filter((user) =>
+        user.email.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    } else {
+      setFilteredUsers([]);
+    }
+  };
+
+  const handleUserSelect = (email) => {
+    setAssignee(email);
+    setFilteredUsers([]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/tasks", {
-        title,
-        description,
-        due_date: date ? format(date, "yyyy-MM-dd") : null,
-        due_time: time || null,
-        status: "pending",
-        creator_id: null, // You might want to replace this with actual user ID if available
-        assignee_id: null, // You might want to replace this with actual assignee ID if available
-        attachment_url: null, // You might want to handle file upload separately
-        attachment_name: attachedFile ? attachedFile.name : null,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/tasks",
+        {
+          title,
+          description,
+          due_date: date ? format(date, "yyyy-MM-dd") : null,
+          due_time: time || null,
+          status: "pending",
+          assignee_id: assignee,
+          attachment_url: null,
+          attachment_name: attachedFile ? attachedFile.name : null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       console.log("Task created:", response.data);
       toast.success("Task created successfully");
       onTaskCreated(response.data);
@@ -89,16 +150,26 @@ const TaskForm = ({ onTaskCreated }) => {
         onChange={(e) => setTitle(e.target.value)}
         required
       />
-      <div className="flex mb-2">
+      <div className="flex mb-2 relative">
         <Input
           className="flex-grow mr-2"
           placeholder="Pick a connection or type an email address"
           value={assignee}
-          onChange={(e) => setAssignee(e.target.value)}
+          onChange={(e) => handleAssigneeChange(e.target.value)}
         />
-        <Button variant="outline" type="button">
-          Address book
-        </Button>
+        {filteredUsers.length > 0 && (
+          <div className="absolute z-10 w-full bg-white mt-10 border rounded-md shadow-lg">
+            {filteredUsers.map((user) => (
+              <div
+                key={user.id}
+                className="p-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleUserSelect(user.email)}
+              >
+                {user.email}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex space-x-2 mb-2">
         <Popover>
@@ -132,8 +203,10 @@ const TaskForm = ({ onTaskCreated }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <Input className="mb-2" placeholder="Add labels..." />
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-2 mb-2">
+        <LabelInput labels={labels} setLabels={setLabels} />
+      </div>
+      <div className="flex justify-between items-center mb-2">
         <div>
           <input
             type="file"
