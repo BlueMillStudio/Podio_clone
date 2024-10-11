@@ -23,6 +23,12 @@ exports.completeProfile = async (req, res) => {
         );
         const orgId = orgResult.rows[0].id;
 
+        // Insert into user_organizations
+        await pool.query(
+            'INSERT INTO user_organizations (user_id, organization_id, role) VALUES ($1, $2, $3)',
+            [userId, orgId, 'Owner']
+        );
+
         // Create default workspace
         await pool.query(
             'INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3)',
