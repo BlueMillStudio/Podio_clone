@@ -18,16 +18,16 @@ router.post("/tasks", async (req, res) => {
     due_date,
     due_time,
     status,
-    creator_id,
     assignee_id,
     attachment_url,
     attachment_name,
+    labels,
   } = req.body;
 
   const sql = `
     INSERT INTO tasks (
       title, description, due_date, due_time, status, 
-      creator_id, assignee_id, attachment_url, attachment_name
+      assignee_id, attachment_url, attachment_name, labels
     ) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
     RETURNING *
@@ -40,10 +40,10 @@ router.post("/tasks", async (req, res) => {
       due_date,
       due_time,
       status || "pending",
-      creator_id,
       assignee_id,
       attachment_url,
       attachment_name,
+      labels,
     ]);
     res.status(201).json(result.rows[0]);
   } catch (err) {

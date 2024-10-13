@@ -14,20 +14,6 @@ import { TimePicker } from "@/components/TimePicker";
 import axios from "axios";
 import LabelInput from "./LabelInput";
 import { toast } from "sonner";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 const TaskForm = ({ onTaskCreated }) => {
   const [title, setTitle] = useState("");
@@ -36,11 +22,10 @@ const TaskForm = ({ onTaskCreated }) => {
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
   const [attachedFile, setAttachedFile] = useState(null);
+  const [labels, setLabels] = useState([]);
   const fileInputRef = useRef(null);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-
-  const [labels, setLabels] = useState([]);
 
   useEffect(() => {
     fetchUsers();
@@ -95,6 +80,13 @@ const TaskForm = ({ onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Find the user ID based on the selected email
+      const selectedUser = users.find((user) => user.email === assignee);
+      if (!selectedUser) {
+        toast.error("Selected user not found. Please choose a valid user.");
+        return;
+      }
+
       const response = await axios.post(
         "http://localhost:5000/api/tasks",
         {
@@ -103,9 +95,10 @@ const TaskForm = ({ onTaskCreated }) => {
           due_date: date ? format(date, "yyyy-MM-dd") : null,
           due_time: time || null,
           status: "pending",
-          assignee_id: assignee,
+          assignee_id: selectedUser.id,
           attachment_url: null,
           attachment_name: attachedFile ? attachedFile.name : null,
+          labels,
         },
         {
           headers: {
@@ -130,6 +123,7 @@ const TaskForm = ({ onTaskCreated }) => {
     setDate(null);
     setTime("");
     setAttachedFile(null);
+    setLabels([]);
   };
 
   return (
@@ -203,10 +197,8 @@ const TaskForm = ({ onTaskCreated }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <div className="flex flex-wrap gap-2 mb-2">
-        <LabelInput labels={labels} setLabels={setLabels} />
-      </div>
-      <div className="flex justify-between items-center mb-2">
+      <LabelInput labels={labels} setLabels={setLabels} />
+      <div className="flex justify-between items-center">
         <div>
           <input
             type="file"
