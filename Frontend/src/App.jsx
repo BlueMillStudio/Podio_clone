@@ -9,6 +9,9 @@ import Register from "./components/Register";
 import Task from "./components/Task";
 import VerifyEmail from "./components/VerifyEmail"; // New component
 import ProfileCompletion from "./components/ProfileCompletion"; // New component
+import AppBuilder from './components/AppBuilder';
+import WorkspaceView from './components/WorkspaceView';
+import AppList from './components/AppList';
 
 const App = () => (
   <BrowserRouter>
@@ -32,6 +35,9 @@ const App = () => (
         <Route path="/intranet" element={<div>Intranet</div>} />
         <Route path="/project-management" element={<div>Project Management</div>} />
         <Route path="/sales-management" element={<div>Sales Management</div>} />
+        <Route path="/workspaces/:workspaceId" element={<WorkspaceView />} />
+        <Route path="/workspaces/:workspaceId/apps" element={<AppList />} />
+        <Route path="/workspaces/:workspaceId/apps/new" element={<AppBuilder />} />
       </Route>
     </Routes>
   </BrowserRouter>

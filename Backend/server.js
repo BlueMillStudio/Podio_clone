@@ -11,6 +11,7 @@ const tasksRoutes = require("./Routes/taskRoutes");
 const usersRoutes = require("./Routes/users");
 const organizationRoutes = require('./Routes/organizationRoutes');
 const workspaceRoutes = require('./Routes/workspaceRoutes');
+const appRoutes = require('./Routes/appRoutes');
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.use("/api", tasksRoutes);
 app.use("/api", usersRoutes);
 app.use('/api/organizations', organizationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
+app.use('/api/apps', appRoutes);
 
 
 const PORT = process.env.PORT || 5000;
