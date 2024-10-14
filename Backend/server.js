@@ -10,6 +10,7 @@ const profileRoutes = require("./Routes/profileRoutes");
 const tasksRoutes = require("./Routes/taskRoutes");
 const usersRoutes = require("./Routes/users");
 const organizationRoutes = require('./Routes/organizationRoutes');
+const workspaceRoutes = require('./Routes/workspaceRoutes');
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api", tasksRoutes);
 app.use("/api", usersRoutes);
 app.use('/api/organizations', organizationRoutes);
+app.use('/api/workspaces', workspaceRoutes);
 
 
 const PORT = process.env.PORT || 5000;
