@@ -1,3 +1,5 @@
+// backend/controllers/organizationController.js
+
 const pool = require('../config/db');
 
 exports.getUserOrganizations = async (req, res) => {
@@ -7,28 +9,24 @@ exports.getUserOrganizations = async (req, res) => {
         // Fetch organizations the user belongs to
         const orgResults = await pool.query(
             `SELECT o.id, o.name
-       FROM organizations o
-       INNER JOIN user_organizations uo ON o.id = uo.organization_id
-       WHERE uo.user_id = $1`,
+             FROM organizations o
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE uo.user_id = $1`,
             [userId]
         );
 
-        const organizations = [];
+        const organizations = orgResults.rows;
 
-        for (const org of orgResults.rows) {
-            // Fetch workspaces for each organization
+        // For each organization, fetch its workspaces
+        for (const org of organizations) {
             const wsResults = await pool.query(
                 `SELECT id, name
-         FROM workspaces
-         WHERE organization_id = $1`,
+                 FROM workspaces
+                 WHERE organization_id = $1`,
                 [org.id]
             );
 
-            organizations.push({
-                id: org.id,
-                name: org.name,
-                workspaces: wsResults.rows,
-            });
+            org.workspaces = wsResults.rows;
         }
 
         res.json({ organizations });
