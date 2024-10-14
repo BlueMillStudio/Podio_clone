@@ -198,7 +198,7 @@ const TaskForm = ({ onTaskCreated }) => {
         onChange={(e) => setDescription(e.target.value)}
       />
       <LabelInput labels={labels} setLabels={setLabels} />
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-5">
         <div>
           <input
             type="file"
