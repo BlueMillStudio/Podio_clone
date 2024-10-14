@@ -23,6 +23,12 @@ exports.completeProfile = async (req, res) => {
         );
         const orgId = orgResult.rows[0].id;
 
+        // Insert into user_organizations
+        await pool.query(
+            'INSERT INTO user_organizations (user_id, organization_id, role) VALUES ($1, $2, $3)',
+            [userId, orgId, 'Owner']
+        );
+
         // Create default workspace
         await pool.query(
             'INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3)',
@@ -37,5 +43,27 @@ exports.completeProfile = async (req, res) => {
         await pool.query('ROLLBACK');
         console.error('Error in profile completion:', error);
         res.status(500).json({ message: 'Error completing profile', error: error.message });
+    }
+};
+
+// Get Current User Information
+exports.getCurrentUser = async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const result = await pool.query(
+            'SELECT id, username, email FROM users WHERE id = $1',
+            [userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = result.rows[0];
+        res.json({ user });
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
+import { CheckCircle } from 'lucide-react'; // Import an icon for visual feedback
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -41,15 +42,20 @@ const Register = () => {
 
     if (isRegistered) {
         return (
-            <Card className="w-full max-w-md mx-auto mt-10">
-                <CardContent>
-                    <Alert>
-                        <AlertDescription>
-                            Registration successful! Please check your email to verify your account.
-                        </AlertDescription>
-                    </Alert>
-                </CardContent>
-            </Card>
+            <div className="flex items-center justify-center h-screen bg-gray-50">
+                <Card className="w-full max-w-md mx-auto">
+                    <CardContent className="text-center p-8">
+                        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">Registration Successful!</h2>
+                        <p className="text-gray-600 mb-6">
+                            Thank you for registering. Please check your email to verify your account.
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                            <Button onClick={() => navigate('/login')}>Go to Login</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         );
     }
 
