@@ -8,10 +8,13 @@ import {
   Share2,
   LogOut,
 } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState('');
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -26,6 +29,44 @@ const ProfileDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await fetch('http://localhost:5000/api/profile/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.user.username);
+        } else {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -38,8 +79,8 @@ const ProfileDropdown = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-20 text-gray-800">
           <div className="p-4 border-b">
-            <p className="font-semibold">dilsha thathsarani</p>
-            <p className="text-sm text-gray-600">Complete your profile</p>
+            <p className="font-semibold">{userName}</p>
+            {/* Optionally, add more user info */}
           </div>
           <ul className="py-2">
             <MenuItem
@@ -74,7 +115,11 @@ const ProfileDropdown = () => {
               icon={<Share2 className="h-4 w-4" />}
               text="My shared apps"
             />
-            <MenuItem icon={<LogOut className="h-4 w-4" />} text="Sign out" />
+            <MenuItem
+              icon={<LogOut className="h-4 w-4" />}
+              text="Sign out"
+              onClick={handleLogout}
+            />
           </ul>
         </div>
       )}
@@ -82,9 +127,12 @@ const ProfileDropdown = () => {
   );
 };
 
-const MenuItem = ({ icon, text }) => (
+const MenuItem = ({ icon, text, onClick }) => (
   <li>
-    <button className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2">
+    <button
+      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+      onClick={onClick}
+    >
       {icon}
       <span>{text}</span>
     </button>

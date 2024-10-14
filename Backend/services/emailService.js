@@ -42,11 +42,96 @@ async function sendVerificationEmail(to, token) {
         const mailOptions = {
             from: `"Podio Clone" <${EMAIL_ADDRESS}>`,
             to,
-            subject: 'Email Verification',
+            subject: 'Welcome to Podio Clone! Please Verify Your Email',
             html: `
-        <h2>Email Verification</h2>
-        <p>Please verify your email by clicking the link below:</p>
-        <a href="${verificationLink}">Verify Email</a>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Verify Your Email</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+          }
+          .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+          }
+          .header {
+            text-align: center;
+            padding: 20px 0;
+          }
+          .header img {
+            max-width: 150px;
+          }
+          .content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+          }
+          .content h1 {
+            font-size: 24px;
+            color: #333333;
+          }
+          .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+          }
+          .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            padding: 20px 0;
+          }
+          .footer a {
+            color: #007bff;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <div class="header">
+            <img src="https://yourdomain.com/logo.png" alt="Podio Clone Logo">
+          </div>
+          <div class="content">
+            <h1>Welcome to Podio Clone!</h1>
+            <p>Hi there,</p>
+            <p>We're excited to have you get started. First, you need to confirm your account. Just press the button below.</p>
+            <p style="text-align: center;">
+              <a href="${verificationLink}" class="button">Verify Email Address</a>
+            </p>
+            <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
+            <p><a href="${verificationLink}">${verificationLink}</a></p>
+            <p>If you have any questions, feel free to reply to this email—we're always happy to help out.</p>
+            <p>Cheers,<br>The Podio Clone Team</p>
+          </div>
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} Podio Clone. All rights reserved.</p>
+            <p>
+              Podio Clone Inc.<br>
+              1234 Street Rd.<br>
+              Suite 1234
+            </p>
+            <p>
+              <a href="https://yourdomain.com/privacy">Privacy Policy</a> | 
+              <a href="https://yourdomain.com/terms">Terms of Service</a>
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
       `,
         };
 
