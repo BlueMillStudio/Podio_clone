@@ -14,6 +14,7 @@ import { TimePicker } from "@/components/TimePicker";
 import axios from "axios";
 import LabelInput from "./LabelInput";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
 
 const TaskForm = ({ onTaskCreated }) => {
   const [title, setTitle] = useState("");
@@ -87,6 +88,12 @@ const TaskForm = ({ onTaskCreated }) => {
         return;
       }
 
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+      const decodedToken = jwtDecode(token);
+      console.log("Decoded token:", decodedToken);
+      const creatorId = decodedToken.userId; // Assuming the user ID is stored in the token as 'userId'
+
       const response = await axios.post(
         "http://localhost:5000/api/tasks",
         {
@@ -95,6 +102,7 @@ const TaskForm = ({ onTaskCreated }) => {
           due_date: date ? format(date, "yyyy-MM-dd") : null,
           due_time: time || null,
           status: "pending",
+          creator_id: creatorId,
           assignee_id: selectedUser.id,
           attachment_url: null,
           attachment_name: attachedFile ? attachedFile.name : null,

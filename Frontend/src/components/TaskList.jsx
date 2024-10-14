@@ -31,9 +31,9 @@ const TaskList = ({ tasks, onTaskUpdate }) => {
         <div key={task.id} className="flex items-center p-2 border-b">
           <Checkbox
             checked={task.status === "completed"}
-            onCheckedChange={(checked) =>
-              handleTaskCompletion(task.id, checked)
-            }
+            onCheckedChange={(checked) => {
+              handleTaskCompletion(task.id, checked);
+            }}
             className="mr-2"
           />
           <span
