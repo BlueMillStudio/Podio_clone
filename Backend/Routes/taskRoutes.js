@@ -1,45 +1,55 @@
 const express = require("express");
 const router = express.Router();
-const db = require("./db");
+const db = require("../config/db");
 
-router.post("/tasks", (req, res) => {
-  const { title, description, dueDate, dueTime, assignee, attachmentName } =
-    req.body;
-
-  const sql = `INSERT INTO tasks (title, description, due_date, due_time, assignee, attachment_name) 
-               VALUES (?, ?, ?, ?, ?, ?)`;
-
-  db.run(
-    sql,
-    [title, description, dueDate, dueTime, assignee, attachmentName],
-    function (err) {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      res.status(201).json({
-        id: this.lastID,
-        title,
-        description,
-        dueDate,
-        dueTime,
-        assignee,
-        attachmentName,
-      });
-    }
-  );
+router.get("/tasks", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM tasks");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.get("/tasks", (req, res) => {
-  const sql = "SELECT * FROM tasks";
+router.post("/tasks", async (req, res) => {
+  const {
+    title,
+    description,
+    due_date,
+    due_time,
+    status,
+    assignee_id,
+    attachment_url,
+    attachment_name,
+    labels,
+  } = req.body;
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
+  const sql = `
+    INSERT INTO tasks (
+      title, description, due_date, due_time, status, 
+      assignee_id, attachment_url, attachment_name, labels
+    ) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+    RETURNING *
+  `;
+
+  try {
+    const result = await db.query(sql, [
+      title,
+      description,
+      due_date,
+      due_time,
+      status || "pending",
+      assignee_id,
+      attachment_url,
+      attachment_name,
+      labels,
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error creating task:", err);
+    res.status(400).json({ error: err.message });
+  }
 });
 
 module.exports = router;
