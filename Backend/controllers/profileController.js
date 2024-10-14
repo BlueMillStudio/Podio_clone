@@ -29,11 +29,46 @@ exports.completeProfile = async (req, res) => {
             [userId, orgId, 'Owner']
         );
 
-        // Create default workspace
-        await pool.query(
-            'INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3)',
+        // Create Employee Network workspace
+        const employeeWorkspaceResult = await pool.query(
+            'INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3) RETURNING id',
             ['Employee Network', orgId, userId]
         );
+        const employeeWorkspaceId = employeeWorkspaceResult.rows[0].id;
+
+        // Create Demo Workspace
+        const demoWorkspaceResult = await pool.query(
+            'INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3) RETURNING id',
+            ['Demo Workspace', orgId, userId]
+        );
+        const demoWorkspaceId = demoWorkspaceResult.rows[0].id;
+
+        // Create default apps in Demo Workspace
+        const defaultApps = [
+            { name: 'Activity', fields: [{ name: 'Title', field_type: 'text', is_required: true }] },
+            { name: 'Leads & Clients', fields: [{ name: 'Client Name', field_type: 'text', is_required: true }] },
+            { name: 'Projects', fields: [{ name: 'Project Name', field_type: 'text', is_required: true }] },
+            { name: 'Inspiration', fields: [{ name: 'Idea', field_type: 'text', is_required: true }] },
+            { name: 'Meetings', fields: [{ name: 'Meeting Date', field_type: 'date', is_required: true }] },
+            { name: 'Expenses', fields: [{ name: 'Amount', field_type: 'number', is_required: true }] },
+        ];
+
+        for (const appTemplate of defaultApps) {
+            // Insert into apps table
+            const appResult = await pool.query(
+                'INSERT INTO apps (name, workspace_id, created_by) VALUES ($1, $2, $3) RETURNING id',
+                [appTemplate.name, demoWorkspaceId, userId]
+            );
+            const appId = appResult.rows[0].id;
+
+            // Insert app fields
+            for (const field of appTemplate.fields) {
+                await pool.query(
+                    'INSERT INTO app_fields (app_id, name, field_type, is_required) VALUES ($1, $2, $3, $4)',
+                    [appId, field.name, field.field_type, field.is_required]
+                );
+            }
+        }
 
         // Commit the transaction
         await pool.query('COMMIT');

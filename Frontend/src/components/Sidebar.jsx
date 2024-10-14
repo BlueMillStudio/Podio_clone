@@ -168,80 +168,100 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 </button>
                 <span className="font-semibold text-sm text-gray-700">{org.name}</span>
               </div>
-              {/* ... DropdownMenu as before ... */}
-            </div>
-            {openOrgs[orgIndex] && (
-              <>
-                <ul className="py-1">
-                  {org.workspaces.map((item, index) => (
-                    <li key={item.id}>
-                      <Link to={`/workspaces/${item.id}`} className="flex items-center px-9 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
-                        <Briefcase className="h-4 w-4" />
-                        <span className="ml-2">{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <div className="px-9 py-1.5 space-y-1.5">
-                  <button
-                    onClick={() => handleCreateWorkspaceClick(org.id)}
-                    className="flex items-center w-full px-3 py-1.5 text-sm font-medium text-teal-600 hover:bg-gray-100 rounded"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create a workspace
-                  </button>
-                  <button className="flex items-center w-full px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => /* Handle organization settings */ null}>
                     <Settings className="h-4 w-4 mr-2" />
-                    Manage workspaces
-                  </button>
-                </div>
-              </>
-            )}
+                    Organization Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => /* Handle invite members */ null}>
+                    <UserCog className="h-4 w-4 mr-2" />
+                    Invite Members
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            {
+              openOrgs[orgIndex] && (
+                <>
+                  <ul className="py-1">
+                    {org.workspaces.map((item, index) => (
+                      <li key={item.id}>
+                        <Link to={`/workspaces/${item.id}`} className="flex items-center px-9 py-1.5 text-sm text-gray-600 hover:bg-gray-100">
+                          <Briefcase className="h-4 w-4" />
+                          <span className="ml-2">{item.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="px-9 py-1.5 space-y-1.5">
+                    <button
+                      onClick={() => handleCreateWorkspaceClick(org.id)}
+                      className="flex items-center w-full px-3 py-1.5 text-sm font-medium text-teal-600 hover:bg-gray-100 rounded"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create a workspace
+                    </button>
+                    <button className="flex items-center w-full px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Manage workspaces
+                    </button>
+                  </div>
+                </>
+              )
+            }
           </div>
         ))}
       </nav>
 
       {/* Create Workspace Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-lg font-semibold mb-4">Create Workspace</h2>
-            <form onSubmit={handleCreateWorkspace}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Workspace Name</label>
-                <input
-                  type="text"
-                  value={newWorkspaceName}
-                  onChange={(e) => setNewWorkspaceName(e.target.value)}
-                  required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Description (Optional)</label>
-                <textarea
-                  value={newWorkspaceDescription}
-                  onChange={(e) => setNewWorkspaceDescription(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="mr-2 px-4 py-2 bg-gray-200 text-gray-700 rounded"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded">
-                  Create
-                </button>
-              </div>
-            </form>
+      {
+        showCreateModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 w-96">
+              <h2 className="text-lg font-semibold mb-4">Create Workspace</h2>
+              <form onSubmit={handleCreateWorkspace}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Workspace Name</label>
+                  <input
+                    type="text"
+                    value={newWorkspaceName}
+                    onChange={(e) => setNewWorkspaceName(e.target.value)}
+                    required
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">Description (Optional)</label>
+                  <textarea
+                    value={newWorkspaceDescription}
+                    onChange={(e) => setNewWorkspaceDescription(e.target.value)}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="mr-2 px-4 py-2 bg-gray-200 text-gray-700 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded">
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </aside>
+        )
+      }
+    </aside >
   );
 };
 
