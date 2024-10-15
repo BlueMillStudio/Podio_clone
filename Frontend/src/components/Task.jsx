@@ -5,14 +5,22 @@ import TaskList from "./TaskList";
 import LabelSection from "./LableSection";
 import axios from "axios";
 import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
 
 const PodioTaskManagement = () => {
   const [activeTab, setActiveTab] = useState("my-tasks");
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const [loggedUserId, setLoggedUserId] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setLoggedUserId(decodedToken.userId);
+    }
+    console.log(loggedUserId);
     fetchTasks();
     fetchUsers();
   }, []);
@@ -20,12 +28,19 @@ const PodioTaskManagement = () => {
   const fetchTasks = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get("http://localhost:5000/api/tasks", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      setTasks(response.data);
+      const allTasks = response.data;
+      const userTasks = allTasks.filter(
+        (task) => task.creator_id === loggedUserId
+      );
+
+      setTasks(userTasks);
+      console.log(userTasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Failed to fetch tasks. Please try again.");
