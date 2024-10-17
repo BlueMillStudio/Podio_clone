@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateAppModal from './CreateAppModal';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Activity, Briefcase } from 'lucide-react'; // Import necessary icons
+import { Activity, Briefcase } from 'lucide-react';
 
 const AppNavBar = ({ appNavItems }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

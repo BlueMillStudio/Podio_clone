@@ -1,23 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import EmployeeNetwork from './EmployeeNetwork';
-import ActivityApp from './ActivityApp';
-import AppNavBar from './AppNavBar';
-import {
-  Activity,
-  Users,
-  Send,
-  Lightbulb,
-  Calendar,
-  Briefcase,
-} from 'lucide-react';
-
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import EmployeeNetwork from "./EmployeeNetwork";
 const WorkspaceView = () => {
   const { workspaceId } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWorkspaceDetails = async () => {
