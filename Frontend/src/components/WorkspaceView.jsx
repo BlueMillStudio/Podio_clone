@@ -1,43 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import EmployeeNetwork from './EmployeeNetwork';
-import ActivityApp from './ActivityApp';
-import AppNavBar from './AppNavBar';
-import {
-  Activity,
-  Users,
-  Send,
-  Lightbulb,
-  Calendar,
-  Briefcase,
-} from 'lucide-react';
-
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import EmployeeNetwork from "./EmployeeNetwork";
 const WorkspaceView = () => {
   const { workspaceId } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWorkspaceDetails = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/workspaces/${workspaceId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `https://pp-tynr.onrender.com/api/workspaces/${workspaceId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           setWorkspace(data.workspace);
           setApps(data.apps);
         } else {
-          console.error('Error fetching workspace details:', data.message);
+          console.error("Error fetching workspace details:", data.message);
         }
         setLoading(false);
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         setLoading(false);
       }
     };
@@ -93,6 +84,7 @@ const WorkspaceView = () => {
       </>
     );
   } else {
+    // Render EmployeeNetwork without AppNavBar
     return <EmployeeNetwork workspace={workspace} />;
   }
 };
