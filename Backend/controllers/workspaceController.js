@@ -1,5 +1,3 @@
-// backend/controllers/workspaceController.js
-
 const pool = require('../config/db');
 
 exports.createWorkspace = async (req, res) => {
