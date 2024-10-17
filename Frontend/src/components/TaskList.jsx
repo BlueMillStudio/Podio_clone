@@ -7,7 +7,7 @@ const TaskList = ({ tasks, onTaskUpdate }) => {
   const handleTaskCompletion = async (taskId, completed) => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/tasks/${taskId}`,
+        `https://pp-tynr.onrender.com/api/tasks/${taskId}`,
         {
           status: completed ? "completed" : "pending",
         },
@@ -37,9 +37,8 @@ const TaskList = ({ tasks, onTaskUpdate }) => {
             className="mr-2"
           />
           <span
-            className={`flex-grow ${
-              task.status === "completed" ? "line-through" : ""
-            }`}
+            className={`flex-grow ${task.status === "completed" ? "line-through" : ""
+              }`}
           >
             {task.title}
           </span>

@@ -1,3 +1,5 @@
+
+--- Content from: C:\podio-rc-org\src\pages\Index.jsx ---
 import React from 'react';
 import Layout from '../components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';

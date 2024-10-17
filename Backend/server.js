@@ -1,6 +1,3 @@
-
-// backend/server.js
-
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -12,11 +9,11 @@ const usersRoutes = require("./Routes/users");
 const organizationRoutes = require('./Routes/organizationRoutes');
 const workspaceRoutes = require('./Routes/workspaceRoutes');
 const appRoutes = require('./Routes/appRoutes');
+const activityRoutes = require('./Routes/activityRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -25,6 +22,7 @@ app.use("/api", usersRoutes);
 app.use('/api/organizations', organizationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/apps', appRoutes);
+app.use('/api/activity', activityRoutes);
 
 
 const PORT = process.env.PORT || 5000;
