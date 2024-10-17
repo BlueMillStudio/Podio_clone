@@ -20,7 +20,7 @@ const PodioTaskManagement = () => {
       const decodedToken = jwtDecode(token);
       setLoggedUserId(decodedToken.userId);
     }
-    console.log(loggedUserId);
+    console.log("Logged user id:", loggedUserId);
     fetchTasks();
     fetchUsers();
   }, []);
@@ -29,11 +29,14 @@ const PodioTaskManagement = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/tasks", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        "https://pp-tynr.onrender.com/api/tasks",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const allTasks = response.data;
       const userTasks = allTasks.filter(
         (task) => task.creator_id === loggedUserId
@@ -51,11 +54,14 @@ const PodioTaskManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        "https://pp-tynr.onrender.com/api/users",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
