@@ -1,5 +1,3 @@
-// backend/controllers/workspaceController.js
-
 const pool = require('../config/db');
 
 exports.createWorkspace = async (req, res) => {
@@ -17,16 +15,49 @@ exports.createWorkspace = async (req, res) => {
             return res.status(403).json({ message: 'You do not belong to this organization' });
         }
 
+        // **Start a transaction**
+        await pool.query('BEGIN');
+
         // Insert new workspace
-        const result = await pool.query(
+        const workspaceResult = await pool.query(
             'INSERT INTO workspaces (name, description, organization_id, created_by) VALUES ($1, $2, $3, $4) RETURNING *',
             [name, description || null, organizationId, userId]
         );
 
-        const workspace = result.rows[0];
+        const workspace = workspaceResult.rows[0];
+
+        // **Create default Activity App in the new workspace**
+        const appResult = await pool.query(
+            'INSERT INTO apps (name, workspace_id, created_by) VALUES ($1, $2, $3) RETURNING id',
+            ['Activity', workspace.id, userId]
+        );
+
+        const appId = appResult.rows[0].id;
+
+        // **Define fields for the Activity App**
+        const activityAppFields = [
+            { name: 'Title', field_type: 'text', is_required: true },
+            { name: 'Content', field_type: 'text', is_required: false },
+            { name: 'Image', field_type: 'file', is_required: false },
+            { name: 'Author', field_type: 'user', is_required: true },
+            { name: 'Timestamp', field_type: 'datetime', is_required: true },
+        ];
+
+        // **Insert fields into app_fields table**
+        for (const field of activityAppFields) {
+            await pool.query(
+                'INSERT INTO app_fields (app_id, name, field_type, is_required) VALUES ($1, $2, $3, $4)',
+                [appId, field.name, field.field_type, field.is_required]
+            );
+        }
+
+        // **Commit the transaction**
+        await pool.query('COMMIT');
 
         res.status(201).json({ message: 'Workspace created successfully', workspace });
     } catch (error) {
+        // **Rollback the transaction in case of error**
+        await pool.query('ROLLBACK');
         console.error('Error creating workspace:', error);
         res.status(500).json({ message: 'Server error' });
     }
