@@ -34,11 +34,14 @@ const TaskForm = ({ onTaskCreated }) => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        "https://pp-tynr.onrender.com/api/users",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -95,7 +98,7 @@ const TaskForm = ({ onTaskCreated }) => {
       const creatorId = decodedToken.userId; // Assuming the user ID is stored in the token as 'userId'
 
       const response = await axios.post(
-        "http://localhost:5000/api/tasks",
+        "https://pp-tynr.onrender.com/api/tasks",
         {
           title,
           description,
