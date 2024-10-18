@@ -29,7 +29,7 @@ const CustomizeAppTemplate = () => {
                     return;
                 }
 
-                const response = await fetch(`https://pp-tynr.onrender.com/api/apps/${appId}/fields`, {
+                const response = await fetch(`http://localhost:5000/api/apps/${appId}/fields`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -111,7 +111,7 @@ const CustomizeAppTemplate = () => {
                 return;
             }
 
-            const response = await fetch(`https://pp-tynr.onrender.com/api/apps/${appId}/fields`, {
+            const response = await fetch(`http://localhost:5000/api/apps/${appId}/fields`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,43 +1,40 @@
 // Login.jsx
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Card, CardHeader, CardContent, CardFooter } from "./ui/card";
-import { Alert, AlertDescription } from "./ui/alert";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
+import { Alert, AlertDescription } from './ui/alert';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to hold error messages
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // State to hold error messages
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError(''); // Clear any previous errors
 
     try {
-      const response = await fetch(
-        "https://pp-tynr.onrender.com/api/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/");
+        localStorage.setItem('token', data.token);
+        navigate('/');
       } else {
-        setError(data.message || "An error occurred during login");
+        setError(data.message || 'An error occurred during login');
       }
     } catch (error) {
-      console.error("Error:", error);
-      setError("Unable to connect to the server. Please try again later.");
+      console.error('Error:', error);
+      setError('Unable to connect to the server. Please try again later.');
     }
   };
 
@@ -71,7 +68,7 @@ const Login = () => {
           </div>
           <CardFooter className="flex justify-between mt-6">
             <Button type="submit">Login</Button>
-            <Button variant="outline" onClick={() => navigate("/register")}>
+            <Button variant="outline" onClick={() => navigate('/register')}>
               Register
             </Button>
           </CardFooter>

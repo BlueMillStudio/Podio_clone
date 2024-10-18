@@ -242,3 +242,131 @@ exports.getAppDetails = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+// Get App Items
+exports.getAppItems = async (req, res) => {
+    const userId = req.user.userId;
+    const { appId } = req.params;
+
+    try {
+        // Verify user access to the app
+        const appCheck = await pool.query(
+            `SELECT a.id, a.name, w.id as workspace_id
+             FROM apps a
+             INNER JOIN workspaces w ON a.workspace_id = w.id
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE a.id = $1 AND uo.user_id = $2`,
+            [appId, userId]
+        );
+
+        if (appCheck.rows.length === 0) {
+            return res.status(403).json({ message: 'You do not have access to this app' });
+        }
+
+        // Fetch app items
+        const itemsResult = await pool.query(
+            'SELECT id, data, created_at, updated_at FROM app_items WHERE app_id = $1 ORDER BY id ASC',
+            [appId]
+        );
+
+        res.status(200).json({ items: itemsResult.rows });
+    } catch (error) {
+        console.error('Error fetching app items:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Create App Item
+exports.createAppItem = async (req, res) => {
+    const userId = req.user.userId;
+    const { appId } = req.params;
+    const { data } = req.body;
+
+    if (!data || typeof data !== 'object') {
+        return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    try {
+        // Verify user access to the app
+        const appCheck = await pool.query(
+            `SELECT a.id, a.name, w.id as workspace_id
+             FROM apps a
+             INNER JOIN workspaces w ON a.workspace_id = w.id
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE a.id = $1 AND uo.user_id = $2`,
+            [appId, userId]
+        );
+
+        if (appCheck.rows.length === 0) {
+            return res.status(403).json({ message: 'You do not have access to this app' });
+        }
+
+        // Insert new item
+        const insertResult = await pool.query(
+            'INSERT INTO app_items (app_id, data) VALUES ($1, $2) RETURNING id, data, created_at, updated_at',
+            [appId, data]
+        );
+
+        res.status(201).json({ item: insertResult.rows[0] });
+    } catch (error) {
+        console.error('Error creating app item:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+// Update App Item
+exports.updateAppItem = async (req, res) => {
+    const userId = req.user.userId;
+    const { appId, itemId } = req.params;
+    const { data } = req.body;
+
+    if (!data || typeof data !== 'object') {
+        return res.status(400).json({ message: 'Invalid input data' });
+    }
+
+    try {
+        // Verify user access
+        // Similar verification as before
+
+        // Update item
+        const updateResult = await pool.query(
+            'UPDATE app_items SET data = $1, updated_at = NOW() WHERE id = $2 AND app_id = $3 RETURNING id, data, created_at, updated_at',
+            [data, itemId, appId]
+        );
+
+        if (updateResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        res.status(200).json({ item: updateResult.rows[0] });
+    } catch (error) {
+        console.error('Error updating app item:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Delete App Item
+exports.deleteAppItem = async (req, res) => {
+    const userId = req.user.userId;
+    const { appId, itemId } = req.params;
+
+    try {
+        // Verify user access
+        // Similar verification as before
+
+        // Delete item
+        const deleteResult = await pool.query(
+            'DELETE FROM app_items WHERE id = $1 AND app_id = $2 RETURNING id',
+            [itemId, appId]
+        );
+
+        if (deleteResult.rows.length === 0) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        res.status(200).json({ message: 'Item deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting app item:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

@@ -35,7 +35,7 @@ const AddConnectionModal = ({ isOpen, onClose, onAddConnection }) => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "https://pp-tynr.onrender.com/api/organizations/user-organizations",
+        "http://localhost:5000/api/organizations/user-organizations",
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
@@ -62,7 +62,7 @@ const AddConnectionModal = ({ isOpen, onClose, onAddConnection }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://pp-tynr.onrender.com/api/connections/invite",
+        "http://localhost:5000/api/connections/invite",
         {
           organizationId:
             selectedItem.type === "org" ? selectedItem.id : selectedItem.orgId,

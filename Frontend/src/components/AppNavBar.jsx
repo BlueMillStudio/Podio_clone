@@ -3,9 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateAppModal from './CreateAppModal';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Activity, Briefcase } from 'lucide-react';
+import {
+    Activity,
+    Briefcase,
+    Calendar,
+    BarChart2,
+    Coins,
+    Lightbulb,
+    User,
+} from 'lucide-react';
 
-const AppNavBar = ({ appNavItems }) => {
+const AppNavBar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,12 +30,15 @@ const AppNavBar = ({ appNavItems }) => {
                     return;
                 }
 
-                const response = await fetch(`https://pp-tynr.onrender.com:/api/apps/workspace/${workspaceId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                const response = await fetch(
+                    `http://localhost:5000/api/apps/workspace/${workspaceId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
                 if (response.ok) {
                     const data = await response.json();
@@ -57,40 +68,37 @@ const AppNavBar = ({ appNavItems }) => {
                 return null;
             }
 
-            const response = await fetch('https://pp-tynr.onrender.com/api/apps', {
+            const response = await fetch('http://localhost:5000/api/apps', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId: workspaceId,
                     name: appData.appName,
                     fields: [
                         {
-                            name: appData.itemName, // Assuming itemName maps to a field
-                            field_type: 'text', // Default field type; adjust as needed
-                            is_required: true, // Adjust based on your requirements
+                            name: appData.itemName,
+                            field_type: 'text',
+                            is_required: true,
                         },
-                        // Add more fields if necessary
                     ],
                 }),
             });
 
             if (response.ok) {
                 const data = await response.json();
-                const createdApp = data.app; // Ensure your backend returns the created app with its id
+                const createdApp = data.app;
                 return createdApp;
             } else {
                 const errorData = await response.json();
                 console.error('Error creating app:', errorData.message);
-                // Optionally, display error message to the user
                 alert(`Error creating app: ${errorData.message}`);
                 return null;
             }
         } catch (error) {
             console.error('Error:', error);
-            // Optionally, display error message to the user
             alert('An unexpected error occurred while creating the app.');
             return null;
         }
@@ -99,24 +107,26 @@ const AppNavBar = ({ appNavItems }) => {
     const handleCreateApp = async (appData) => {
         const createdApp = await onAddApp(appData);
         if (createdApp && createdApp.id) {
-            setIsModalOpen(false); // Close the modal
-            // Navigate to CustomizeAppTemplate page with the new appId
+            setIsModalOpen(false);
             navigate(`/workspaces/${workspaceId}/apps/${createdApp.id}/customize`);
-            // Optionally, update the apps list to include the newly created app
             setApps((prevApps) => [...prevApps, createdApp]);
-        } else {
-            // Handle creation failure if necessary
-            // The error has already been handled in onAddApp
         }
     };
 
     const getAppIcon = (appName) => {
-        // Return different icons based on the app name
         switch (appName.toLowerCase()) {
             case 'activity':
                 return <Activity className="h-5 w-5" />;
-            case 'briefcase':
-                return <Briefcase className="h-5 w-5" />;
+            case 'leads & clients':
+                return <User className="h-5 w-5" />;
+            case 'projects':
+                return <BarChart2 className="h-5 w-5" />;
+            case 'meetings':
+                return <Calendar className="h-5 w-5" />;
+            case 'expenses':
+                return <Coins className="h-5 w-5" />;
+            case 'inspiration':
+                return <Lightbulb className="h-5 w-5" />;
             default:
                 return <Briefcase className="h-5 w-5" />;
         }
@@ -137,9 +147,16 @@ const AppNavBar = ({ appNavItems }) => {
                     <div className="flex space-x-4">
                         {apps.map((app) => (
                             <Button
+                                key={app.id}
                                 variant="ghost"
                                 className="flex flex-col items-center p-1 hover:bg-gray-300 text-gray-700"
-                                onClick={() => navigate(`/workspaces/${workspaceId}/apps/${app.id}`)}
+                                onClick={() => {
+                                    if (app.name.toLowerCase() === 'activity') {
+                                        navigate(`/workspaces/${workspaceId}`);
+                                    } else {
+                                        navigate(`/workspaces/${workspaceId}/apps/${app.id}`);
+                                    }
+                                }}
                             >
                                 {getAppIcon(app.name)}
                                 <span className="text-xs mt-1">{app.name}</span>
