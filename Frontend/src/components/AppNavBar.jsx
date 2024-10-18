@@ -22,7 +22,7 @@ const AppNavBar = ({ appNavItems }) => {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/apps/workspace/${workspaceId}`, {
+                const response = await fetch(`https://pp-tynr.onrender.com:/api/apps/workspace/${workspaceId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -57,7 +57,7 @@ const AppNavBar = ({ appNavItems }) => {
                 return null;
             }
 
-            const response = await fetch('http://localhost:5000/api/apps', {
+            const response = await fetch('https://pp-tynr.onrender.com/api/apps', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

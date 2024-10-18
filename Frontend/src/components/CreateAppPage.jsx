@@ -17,7 +17,7 @@ const CreateAppPage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/apps`, {
+            const response = await fetch(`https://pp-tynr.onrender.com/api/apps`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const CreateAppPage = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:5000/api/apps/${appData.id}/fields`, {
+            const response = await fetch(`https://pp-tynr.onrender.com/api/apps/${appData.id}/fields`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
