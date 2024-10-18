@@ -22,7 +22,7 @@ const AppDetails = () => {
                 }
 
                 // Fetch App Details
-                const appResponse = await fetch(`http://localhost:5000/api/apps/${appId}`, {
+                const appResponse = await fetch(`https://pp-tynr.onrender.com/api/apps/${appId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -38,7 +38,7 @@ const AppDetails = () => {
                 }
 
                 // Fetch App Fields
-                const fieldsResponse = await fetch(`http://localhost:5000/api/apps/${appId}/fields`, {
+                const fieldsResponse = await fetch(`https://pp-tynr.onrender.com/api/apps/${appId}/fields`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

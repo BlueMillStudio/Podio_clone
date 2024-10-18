@@ -48,7 +48,7 @@ const ActivityApp = ({ workspace }) => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(
-                    `http://localhost:5000/api/activity/workspaces/${workspace.id}/posts`,
+                    `https://pp-tynr.onrender.com/api/activity/workspaces/${workspace.id}/posts`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const ActivityApp = ({ workspace }) => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch(
-                    `http://localhost:5000/api/activity/workspaces/${workspace.id}/tasks`,
+                    `https://pp-tynr.onrender.com/api/activity/workspaces/${workspace.id}/tasks`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ const ActivityApp = ({ workspace }) => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(
-                `http://localhost:5000/api/activity/workspaces/${workspace.id}/posts`,
+                `https://pp-tynr.onrender.com/api/activity/workspaces/${workspace.id}/posts`,
                 {
                     method: 'POST',
                     headers: {
@@ -144,7 +144,7 @@ const ActivityApp = ({ workspace }) => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(
-                `http://localhost:5000/api/activity/workspaces/${workspace.id}/tasks`,
+                `https://pp-tynr.onrender.com/api/activity/workspaces/${workspace.id}/tasks`,
                 {
                     method: 'POST',
                     headers: {
