@@ -12,7 +12,7 @@ const WorkspaceView = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `https://pp-tynr.onrender.com/api/workspaces/${workspaceId}`,
+          `http://localhost:5000/api/workspaces/${workspaceId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

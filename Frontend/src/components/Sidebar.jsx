@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         }
 
         const response = await fetch(
-          "https://pp-tynr.onrender.com/api/organizations/user-organizations",
+          "http://localhost:5000/api/organizations/user-organizations",
           {
             method: "GET",
             headers: {
@@ -100,7 +100,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       }
 
       const response = await fetch(
-        "https://pp-tynr.onrender.com/api/workspaces/create",
+        "http://localhost:5000/api/workspaces/create",
         {
           method: "POST",
           headers: {

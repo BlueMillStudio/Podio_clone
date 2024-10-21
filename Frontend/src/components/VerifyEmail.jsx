@@ -13,7 +13,7 @@ const VerifyEmail = () => {
     const verifyEmail = async () => {
       try {
         const response = await fetch(
-          `https://pp-tynr.onrender.com/api/auth/verify-email?token=${token}`
+          `http://localhost:5000/api/auth/verify-email?token=${token}`
         );
         if (response.redirected) {
           // Extract JWT token from the redirected URL

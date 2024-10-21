@@ -29,7 +29,7 @@ const ProfileCompletion = () => {
 
     try {
       const response = await fetch(
-        "https://pp-tynr.onrender.com/api/profile/complete-profile",
+        "http://localhost:5000/api/profile/complete-profile",
         {
           method: "POST",
           headers: {

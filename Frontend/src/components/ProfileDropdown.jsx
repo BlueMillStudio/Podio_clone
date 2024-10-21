@@ -38,15 +38,12 @@ const ProfileDropdown = () => {
           return;
         }
 
-        const response = await fetch(
-          "https://pp-tynr.onrender.com/api/profile/me",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch("http://localhost:5000/api/profile/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.ok) {
           const data = await response.json();

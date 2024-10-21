@@ -16,7 +16,7 @@ const AppList = () => {
         }
 
         const response = await fetch(
-          `https://pp-tynr.onrender.com/api/apps/workspace/${workspaceId}`,
+          `http://localhost:5000/api/apps/workspace/${workspaceId}`,
           {
             method: "GET",
             headers: {

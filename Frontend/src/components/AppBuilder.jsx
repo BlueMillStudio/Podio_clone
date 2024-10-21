@@ -36,7 +36,7 @@ const AppBuilder = () => {
         return;
       }
 
-      const response = await fetch("https://pp-tynr.onrender.com/api/apps", {
+      const response = await fetch("http://localhost:5000/api/apps", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
