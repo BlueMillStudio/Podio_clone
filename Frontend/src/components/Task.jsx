@@ -20,7 +20,7 @@ const PodioTaskManagement = () => {
       const decodedToken = jwtDecode(token);
       setLoggedUserId(decodedToken.userId);
     }
-    console.log(loggedUserId);
+    console.log("Logged User ID:", loggedUserId);
     fetchTasks();
     fetchUsers();
   }, []);
