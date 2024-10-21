@@ -19,7 +19,7 @@ const Connections = () => {
   const fetchConnections = async () => {
     try {
       const response = await axios.get(
-        "https://pp-tynr.onrender.com/api/connections",
+        "http://localhost:5000/api/connections",
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }

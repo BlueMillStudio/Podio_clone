@@ -9,4 +9,10 @@ router.get('/:appId/fields', authMiddleware, appController.getAppFields);
 router.put('/:appId/fields', authMiddleware, appController.updateAppFields);
 router.get('/:appId', authMiddleware, appController.getAppDetails);
 
+// New routes for app items
+router.get('/:appId/items', authMiddleware, appController.getAppItems);
+router.post('/:appId/items', authMiddleware, appController.createAppItem);
+router.put('/:appId/items/:itemId', authMiddleware, appController.updateAppItem);
+router.delete('/:appId/items/:itemId', authMiddleware, appController.deleteAppItem);
+
 module.exports = router;

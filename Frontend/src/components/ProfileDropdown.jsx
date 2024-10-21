@@ -8,11 +8,11 @@ import {
   Share2,
   LogOut,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -32,33 +32,30 @@ const ProfileDropdown = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (!token) {
-          navigate("/login");
+          navigate('/login');
           return;
         }
 
-        const response = await fetch(
-          "https://pp-tynr.onrender.com/api/profile/me",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch('http://localhost:5000/api/profile/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
 
         if (response.ok) {
           const data = await response.json();
           setUserName(data.user.username);
         } else {
-          localStorage.removeItem("token");
-          navigate("/login");
+          localStorage.removeItem('token');
+          navigate('/login');
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        localStorage.removeItem("token");
-        navigate("/login");
+        console.error('Error fetching user data:', error);
+        localStorage.removeItem('token');
+        navigate('/login');
       }
     };
 
@@ -66,8 +63,8 @@ const ProfileDropdown = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   return (
