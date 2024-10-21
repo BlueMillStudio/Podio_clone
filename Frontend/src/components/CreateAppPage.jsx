@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CreateAppModal from './CreateAppModal';
-import CustomizeAppTemplate from './CustomizeAppTemplate'; // Updated import
+import CustomizeAppTemplate from './CustomizeAppTemplate';
 
 const CreateAppPage = () => {
     const [step, setStep] = useState('initial');
@@ -21,28 +21,30 @@ const CreateAppPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId,
                     name: data.appName,
-                    fields: [],
-                    icon: data.icon
+                    itemName: data.itemName, // Include itemName
+                    appType: data.appType,   // Include appType
+                    appIcon: data.appIcon,   // Include appIcon
+                    fields: [], // Empty fields array for now
                 }),
             });
 
             if (response.ok) {
                 const createdApp = await response.json();
-                setAppData(createdApp.app); // Adjusted to get the 'app' from response
+                setAppData(createdApp.app);
                 setStep('customize');
             } else {
                 const errorData = await response.json();
                 console.error('Error creating app:', errorData.message);
-                // Optionally set an error state to display to the user
+                alert(`Error creating app: ${errorData.message}`);
             }
         } catch (error) {
             console.error('Error:', error);
-            // Optionally set an error state to display to the user
+            alert('An unexpected error occurred while creating the app.');
         }
     };
 
@@ -55,25 +57,25 @@ const CreateAppPage = () => {
             }
 
             const response = await fetch(`http://localhost:5000/api/apps/${appData.id}/fields`, {
-                method: 'POST',
+                method: 'PUT', // Changed from POST to PUT for updating fields
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ fields }),
             });
 
             if (response.ok) {
-                // Navigate back to the app list
-                navigate(`/workspaces/${workspaceId}/apps`);
+                // Navigate to the app details page after saving fields
+                navigate(`/workspaces/${workspaceId}/apps/${appData.id}`);
             } else {
                 const errorData = await response.json();
                 console.error('Error saving fields:', errorData.message);
-                // Optionally set an error state to display to the user
+                alert(`Error saving fields: ${errorData.message}`);
             }
         } catch (error) {
             console.error('Error:', error);
-            // Optionally set an error state to display to the user
+            alert('An unexpected error occurred while saving fields.');
         }
     };
 
@@ -95,7 +97,7 @@ const CreateAppPage = () => {
                     initialFields={[]} // Initially empty
                     onSave={handleSaveFields}
                     onCancel={handleCancel}
-                    appId={appData.id} // Pass appId if needed
+                    appId={appData.id}
                 />
             )}
         </div>

@@ -3,9 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateAppModal from './CreateAppModal';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Activity, Briefcase } from 'lucide-react'; // Import necessary icons
+import {
+    Activity,
+    Briefcase,
+    // Import other icons as needed
+} from 'lucide-react';
 
-const AppNavBar = ({ appNavItems }) => {
+const AppNavBar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [apps, setApps] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,12 +26,15 @@ const AppNavBar = ({ appNavItems }) => {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:5000/api/apps/workspace/${workspaceId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+                const response = await fetch(
+                    `http://localhost:5000/api/apps/workspace/${workspaceId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
                 if (response.ok) {
                     const data = await response.json();
@@ -61,20 +68,17 @@ const AppNavBar = ({ appNavItems }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId: workspaceId,
                     name: appData.appName,
-                    fields: [
-                        {
-                            name: appData.itemName, // Assuming itemName maps to a field
-                            field_type: 'text', // Default field type; adjust as needed
-                            is_required: true, // Adjust based on your requirements
-                        },
-                        // Add more fields if necessary
-                    ],
+                    itemName: appData.itemName,
+                    appType: appData.appType,
+                    appIcon: appData.appIcon,
+                    fields: [], // Include fields as an empty array
                 }),
+
             });
 
             if (response.ok) {
@@ -84,13 +88,11 @@ const AppNavBar = ({ appNavItems }) => {
             } else {
                 const errorData = await response.json();
                 console.error('Error creating app:', errorData.message);
-                // Optionally, display error message to the user
                 alert(`Error creating app: ${errorData.message}`);
                 return null;
             }
         } catch (error) {
             console.error('Error:', error);
-            // Optionally, display error message to the user
             alert('An unexpected error occurred while creating the app.');
             return null;
         }
@@ -110,13 +112,13 @@ const AppNavBar = ({ appNavItems }) => {
         }
     };
 
-    const getAppIcon = (appName) => {
-        // Return different icons based on the app name
-        switch (appName.toLowerCase()) {
-            case 'activity':
+    const getAppIcon = (appIcon) => {
+        switch (appIcon) {
+            case 'ActivityIcon':
                 return <Activity className="h-5 w-5" />;
-            case 'briefcase':
+            case 'BriefcaseIcon':
                 return <Briefcase className="h-5 w-5" />;
+            // Add cases for other icons
             default:
                 return <Briefcase className="h-5 w-5" />;
         }
@@ -137,11 +139,12 @@ const AppNavBar = ({ appNavItems }) => {
                     <div className="flex space-x-4">
                         {apps.map((app) => (
                             <Button
+                                key={app.id}
                                 variant="ghost"
                                 className="flex flex-col items-center p-1 hover:bg-gray-300 text-gray-700"
                                 onClick={() => navigate(`/workspaces/${workspaceId}/apps/${app.id}`)}
                             >
-                                {getAppIcon(app.name)}
+                                {getAppIcon(app.app_icon)}
                                 <span className="text-xs mt-1">{app.name}</span>
                             </Button>
                         ))}
