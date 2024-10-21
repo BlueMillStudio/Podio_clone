@@ -1,7 +1,7 @@
 // backend/services/emailService.js
 
-const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
 const {
   GOOGLE_CLIENT_ID,
@@ -24,9 +24,9 @@ async function sendVerificationEmail(to, token) {
     const accessToken = await oauth2Client.getAccessToken();
 
     const transport = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
-        type: "OAuth2",
+        type: 'OAuth2',
         user: EMAIL_ADDRESS,
         clientId: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
@@ -35,14 +35,14 @@ async function sendVerificationEmail(to, token) {
       },
     });
 
-    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:8080";
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
     const verificationLink = `${FRONTEND_URL}/verify-email?token=${token}`;
 
     const mailOptions = {
       from: `"Podio Clone" <${EMAIL_ADDRESS}>`,
       to,
-      subject: "Welcome to Podio Clone! Please Verify Your Email",
+      subject: 'Welcome to Podio Clone! Please Verify Your Email',
       html: `
       <!DOCTYPE html>
       <html>
@@ -136,86 +136,11 @@ async function sendVerificationEmail(to, token) {
     };
 
     await transport.sendMail(mailOptions);
-    console.log("Verification email sent to:", to);
+    console.log('Verification email sent to:', to);
   } catch (error) {
-    console.error("Error sending verification email:", error);
-    throw new Error("Failed to send verification email");
+    console.error('Error sending verification email:', error);
+    throw new Error('Failed to send verification email');
   }
 }
 
-async function sendInvitationEmail(to, message, invitationLink) {
-  try {
-    const accessToken = await oauth2Client.getAccessToken();
-
-    const transport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: EMAIL_ADDRESS,
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
-        refreshToken: GOOGLE_REFRESH_TOKEN,
-        accessToken: accessToken.token,
-      },
-    });
-
-    const mailOptions = {
-      from: `"Podio Clone" <${EMAIL_ADDRESS}>`,
-      to,
-      subject: "You've been invited to join Podio Clone!",
-      html: `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Invitation to Join Podio Clone</title>
-        <style>
-          /* ... keep existing styles */
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <div class="header">
-            <img src="https://yourdomain.com/logo.png" alt="Podio Clone Logo">
-          </div>
-          <div class="content">
-            <h1>You've been invited to join Podio Clone!</h1>
-            <p>Hello,</p>
-            <p>You've been invited to join a workspace on Podio Clone. Here's a message from the sender:</p>
-            <p><em>${message}</em></p>
-            <p>To accept the invitation and join the workspace, click the button below:</p>
-            <p style="text-align: center;">
-              <a href="${invitationLink}" class="button">Accept Invitation</a>
-            </p>
-            <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
-            <p><a href="${invitationLink}">${invitationLink}</a></p>
-            <p>If you have any questions, feel free to contact our support team.</p>
-            <p>Best regards,<br>The Podio Clone Team</p>
-          </div>
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Podio Clone. All rights reserved.</p>
-            <p>
-              Podio Clone Inc.<br>
-              1234 Street Rd.<br>
-              Suite 1234
-            </p>
-            <p>
-              <a href="https://yourdomain.com/privacy">Privacy Policy</a> | 
-              <a href="https://yourdomain.com/terms">Terms of Service</a>
-            </p>
-          </div>
-        </div>
-      </body>
-      </html>
-      `,
-    };
-
-    await transport.sendMail(mailOptions);
-    console.log("Invitation email sent to:", to);
-  } catch (error) {
-    console.error("Error sending invitation email:", error);
-    throw new Error("Failed to send invitation email");
-  }
-}
-
-module.exports = { sendVerificationEmail, sendInvitationEmail };
+module.exports = { sendVerificationEmail };

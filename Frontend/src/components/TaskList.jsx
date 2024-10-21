@@ -37,9 +37,8 @@ const TaskList = ({ tasks, onTaskUpdate }) => {
             className="mr-2"
           />
           <span
-            className={`flex-grow ${
-              task.status === "completed" ? "line-through" : ""
-            }`}
+            className={`flex-grow ${task.status === "completed" ? "line-through" : ""
+              }`}
           >
             {task.title}
           </span>

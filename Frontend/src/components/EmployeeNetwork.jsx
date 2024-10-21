@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-const EmployeeNetwork = () => {
+const EmployeeNetwork = ({ workspace }) => {
     const dummyEmployees = [
-        { id: 1, name: 'John Doe', avatar: '/path/to/avatar1.jpg' },
-        { id: 2, name: 'Jane Smith', avatar: '/path/to/avatar2.jpg' },
+        { id: 1, name: 'John Doe', avatar: 'https://via.placeholder.com/40' },
+        { id: 2, name: 'Jane Smith', avatar: 'https://via.placeholder.com/40' },
     ];
 
     const dummyPosts = [

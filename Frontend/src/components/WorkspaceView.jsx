@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import EmployeeNetwork from "./EmployeeNetwork";
+import ActivityApp from "./ActivityApp";
+import AppNavBar from "./AppNavBar";
+import {
+  Activity,
+  Users,
+  Send,
+  Lightbulb,
+  Calendar,
+  Briefcase,
+} from "lucide-react";
+
 const WorkspaceView = () => {
   const { workspaceId } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWorkspaceDetails = async () => {
@@ -44,47 +56,48 @@ const WorkspaceView = () => {
     return <div>Error loading workspace details.</div>;
   }
 
-  // Check if the workspace is the Employee Network
-  if (workspace.name === "Employee Network") {
-    return <EmployeeNetwork />;
+  // Check if the workspace has an Activity App
+  const activityApp = apps.find((app) => app.name === "Activity");
+
+  // Check if workspace is Demo Workspace
+  const isDemoWorkspace = workspace.name === "Demo Workspace";
+
+  // Define appNavItems based on workspace type
+  let appNavItems = [];
+
+  if (isDemoWorkspace) {
+    // Demo Workspace: Include all default apps
+    appNavItems = [
+      { icon: <Activity className="h-5 w-5" />, label: "Activity" },
+      { icon: <Users className="h-5 w-5" />, label: "Contacts" },
+      { icon: <Send className="h-5 w-5" />, label: "Projects" },
+      { icon: <Lightbulb className="h-5 w-5" />, label: "Ideas" },
+      { icon: <Calendar className="h-5 w-5" />, label: "Calendar" },
+      { icon: <Briefcase className="h-5 w-5" />, label: "Expenses" },
+    ];
+  } else {
+    // Other Workspaces: Only Activity App
+    appNavItems = [
+      { icon: <Activity className="h-5 w-5" />, label: "Activity" },
+    ];
   }
 
-  // Regular workspace rendering
-  return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      {/* Workspace details */}
-      <h1 className="text-3xl font-bold mb-4">{workspace.name}</h1>
-      {workspace.description && <p className="mb-6">{workspace.description}</p>}
+  // Handler for adding a new app
+  const handleAddApp = () => {
+    navigate(`/workspaces/${workspaceId}/apps/new`);
+  };
 
-      {/* Apps list */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Apps</h2>
-        <Link
-          to={`/workspaces/${workspaceId}/apps/new`}
-          className="px-4 py-2 bg-teal-600 text-white rounded"
-        >
-          Create New App
-        </Link>
-      </div>
-
-      {apps.length === 0 ? (
-        <p>No apps found in this workspace.</p>
-      ) : (
-        <ul className="space-y-4">
-          {apps.map((app) => (
-            <li key={app.id} className="border p-4 rounded">
-              <Link
-                to={`/workspaces/${workspaceId}/apps/${app.id}`}
-                className="text-xl font-semibold text-blue-600"
-              >
-                {app.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+  // Determine which component to render
+  if (activityApp) {
+    return (
+      <>
+        <AppNavBar appNavItems={appNavItems} onAddApp={handleAddApp} />
+        <ActivityApp workspace={workspace} />
+      </>
+    );
+  } else {
+    return <EmployeeNetwork workspace={workspace} />;
+  }
 };
 
 export default WorkspaceView;
