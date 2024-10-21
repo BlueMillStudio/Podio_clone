@@ -21,8 +21,8 @@ const PodioTaskManagement = () => {
       setLoggedUserId(decodedToken.userId);
     }
     console.log("Logged User ID:", loggedUserId);
-    fetchTasks();
     fetchUsers();
+    fetchTasks();
   }, []);
 
   const fetchTasks = async () => {
