@@ -116,19 +116,19 @@ const AppNavBar = () => {
     const getAppIcon = (appName) => {
         switch (appName.toLowerCase()) {
             case 'activity':
-                return <Activity className="h-5 w-5" />;
+                return <Activity className="h-6 w-6" />;
             case 'leads & clients':
-                return <User className="h-5 w-5" />;
+                return <User className="h-6 w-6" />;
             case 'projects':
-                return <BarChart2 className="h-5 w-5" />;
+                return <BarChart2 className="h-6 w-6" />;
             case 'meetings':
-                return <Calendar className="h-5 w-5" />;
+                return <Calendar className="h-6 w-6" />;
             case 'expenses':
-                return <Coins className="h-5 w-5" />;
+                return <Coins className="h-6 w-6" />;
             case 'inspiration':
-                return <Lightbulb className="h-5 w-5" />;
+                return <Lightbulb className="h-6 w-6" />;
             default:
-                return <Briefcase className="h-5 w-5" />;
+                return <Briefcase className="h-6 w-6" />;
         }
     };
 
@@ -143,7 +143,7 @@ const AppNavBar = () => {
     return (
         <>
             <nav className="bg-gray-200 py-2 px-4 border-b border-gray-300">
-                <div className="container mx-auto flex justify-between items-center">
+                <div className="container mx-auto">
                     <div className="flex space-x-4">
                         {apps.map((app) => (
                             <Button
@@ -162,15 +162,15 @@ const AppNavBar = () => {
                                 <span className="text-xs mt-1">{app.name}</span>
                             </Button>
                         ))}
+                        <Button
+                            variant="ghost"
+                            className="flex flex-col items-center p-1 hover:bg-gray-300 text-teal-600 min-w-[48px]"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <Plus className="h-5 w-5" />
+                            <span className="text-xs mt-1">Add App</span>
+                        </Button>
                     </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-teal-600 border-teal-600 hover:bg-teal-50"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        <Plus className="h-4 w-4 mr-1" /> ADD APP
-                    </Button>
                 </div>
             </nav>
             <CreateAppModal

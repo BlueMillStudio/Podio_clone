@@ -84,7 +84,7 @@ const Connections = () => {
                 )}
               </Avatar>
               <div>
-                <h2 className="font-semibold text-blue-600">
+                <h2 className="font-semibold text-teal-600">
                   {connection.name}
                 </h2>
                 <div className="flex items-center text-sm text-gray-500">
