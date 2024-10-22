@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Activity, Briefcase } from 'lucide-react';
 
 const availableIcons = [
     { value: 'ActivityIcon', label: 'Activity', icon: <Activity className="h-5 w-5" /> },
     { value: 'BriefcaseIcon', label: 'Briefcase', icon: <Briefcase className="h-5 w-5" /> },
+    // Add more icons as needed
 ];
 
 const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
@@ -65,11 +78,8 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
-                        {error && (
-                            <div className="text-red-500 text-sm">
-                                {error}
-                            </div>
-                        )}
+                        {error && <div className="text-red-500 text-sm">{error}</div>}
+                        {/* App Name */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="appName" className="text-right">
                                 App Name
@@ -82,6 +92,7 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
                                 required
                             />
                         </div>
+                        {/* Item Name */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="itemName" className="text-right">
                                 Item Name
@@ -94,10 +105,11 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
                                 required
                             />
                         </div>
+                        {/* App Type */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">App Type</Label>
                             <RadioGroup
-                                defaultValue="standard"
+                                value={appType}
                                 onValueChange={setAppType}
                                 className="col-span-3"
                             >
@@ -115,11 +127,16 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
                                 </div>
                             </RadioGroup>
                         </div>
+                        {/* App Icon */}
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="appIcon" className="text-right">
                                 Icon
                             </Label>
-                            <Select onValueChange={setAppIcon} className="col-span-3" required>
+                            <Select
+                                onValueChange={setAppIcon}
+                                className="col-span-3"
+                                value={appIcon}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select an icon..." />
                                 </SelectTrigger>
@@ -135,10 +152,23 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleCancel}
+                            disabled={isSubmitting}
+                        >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!appName.trim() || !itemName.trim() || !appIcon || isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={
+                                !appName.trim() ||
+                                !itemName.trim() ||
+                                !appIcon ||
+                                isSubmitting
+                            }
+                        >
                             {isSubmitting ? 'Creating...' : 'Create App'}
                         </Button>
                     </DialogFooter>
@@ -146,7 +176,6 @@ const CreateAppModal = ({ isOpen, onClose, onCreateApp }) => {
             </DialogContent>
         </Dialog>
     );
-
 };
 
 export default CreateAppModal;

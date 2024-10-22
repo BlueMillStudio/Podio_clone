@@ -6,11 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
     Activity,
     Briefcase,
-    Calendar,
-    BarChart2,
-    Coins,
-    Lightbulb,
-    User,
+    // Import other icons as needed
 } from 'lucide-react';
 
 const AppNavBar = () => {
@@ -39,6 +35,7 @@ const AppNavBar = () => {
                         },
                     }
                 );
+
 
                 if (response.ok) {
                     const data = await response.json();
@@ -73,18 +70,17 @@ const AppNavBar = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId: workspaceId,
                     name: appData.appName,
-                    fields: [
-                        {
-                            name: appData.itemName,
-                            field_type: 'text',
-                            is_required: true,
-                        },
-                    ],
+                    itemName: appData.itemName,
+                    appType: appData.appType,
+                    appIcon: appData.appIcon,
+                    fields: [], // Include fields as an empty array
                 }),
+
             });
 
             if (response.ok) {
@@ -158,7 +154,7 @@ const AppNavBar = () => {
                                     }
                                 }}
                             >
-                                {getAppIcon(app.name)}
+                                {getAppIcon(app.app_icon)}
                                 <span className="text-xs mt-1">{app.name}</span>
                             </Button>
                         ))}
