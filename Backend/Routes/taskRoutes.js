@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const authenticateToken = require("../middleware/auth");
 
 router.get("/tasks", async (req, res) => {
   try {
@@ -8,6 +9,49 @@ router.get("/tasks", async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+// Get tasks for logged in user
+router.get("/tasks/user", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const query = `
+      SELECT 
+        t.id,
+        t.title,
+        t.description,
+        t.due_date,
+        t.due_time,
+        t.status,
+        t.assignee_id,
+        t.attachment_name,
+        t.labels,
+        t.creator_id,
+        t.created_at
+        
+      FROM tasks t
+      LEFT JOIN users u ON t.creator_id = u.id
+      WHERE t.creator_id = $1 
+      OR t.assignee_id = $1
+      ORDER BY t.due_date ASC, t.due_time ASC
+    `;
+
+    const result = await db.query(query, [userId]);
+
+    // Format dates and times for frontend
+    const formattedTasks = result.rows.map((task) => ({
+      ...task,
+      due_date: task.due_date
+        ? new Date(task.due_date).toISOString().split("T")[0]
+        : null,
+      due_time: task.due_time || null,
+    }));
+
+    res.json(formattedTasks);
+  } catch (error) {
+    console.error("Error fetching user tasks:", error);
+    res.status(500).json({ error: "Failed to fetch tasks" });
   }
 });
 

@@ -20,9 +20,9 @@ const PodioTaskManagement = () => {
       const decodedToken = jwtDecode(token);
       setLoggedUserId(decodedToken.userId);
     }
-    console.log(loggedUserId);
-    fetchTasks();
+    console.log("Logged User ID:", loggedUserId);
     fetchUsers();
+    fetchTasks();
   }, []);
 
   const fetchTasks = async () => {
