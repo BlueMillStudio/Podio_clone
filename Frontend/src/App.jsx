@@ -14,6 +14,7 @@ import CreateAppPage from "./components/CreateAppPage";
 import ActivityApp from "./components/ActivityApp";
 import CustomizeAppTemplate from "./components/CustomizeAppTemplate";
 import AppDetails from "./components/AppDetails";
+import Join from "./pages/Join";
 
 const App = () => (
   <BrowserRouter>
@@ -50,6 +51,9 @@ const App = () => (
         />{" "}
         {/* Optional */}
       </Route>
+
+      {/* Join route */}
+      <Route path="/join" element={<Join />} />
     </Routes>
   </BrowserRouter>
 );

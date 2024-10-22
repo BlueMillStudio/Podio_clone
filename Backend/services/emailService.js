@@ -143,22 +143,157 @@ async function sendVerificationEmail(to, token) {
   }
 }
 
-// Create transport function
-async function createTransport() {
-  const accessToken = await oauth2Client.getAccessToken();
+// // Create transport function
+// async function createTransport() {
+//   const accessToken = await oauth2Client.getAccessToken();
 
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: EMAIL_ADDRESS,
-      clientId: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-      refreshToken: GOOGLE_REFRESH_TOKEN,
-      accessToken: accessToken.token,
-    },
-  });
-}
+//   return nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       type: "OAuth2",
+//       user: EMAIL_ADDRESS,
+//       clientId: GOOGLE_CLIENT_ID,
+//       clientSecret: GOOGLE_CLIENT_SECRET,
+//       refreshToken: GOOGLE_REFRESH_TOKEN,
+//       accessToken: accessToken.token,
+//     },
+//   });
+// }
+
+// async function sendInvitationEmail(
+//   to,
+//   message,
+//   invitationLink,
+//   organizationDetails
+// ) {
+//   try {
+//     const transport = await createTransport();
+//     const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:8080";
+
+//     const mailOptions = {
+//       from: `"Podio Clone" <${EMAIL_ADDRESS}>`,
+//       to,
+//       subject: "You've been invited to join Podio Clone!",
+//       html: `
+//       <!DOCTYPE html>
+//       <html>
+//       <head>
+//         <meta charset="UTF-8">
+//         <title>Invitation to Join Podio Clone</title>
+//         <style>
+//           body {
+//             font-family: Arial, sans-serif;
+//             background-color: #f6f6f6;
+//             margin: 0;
+//             padding: 0;
+//           }
+//           .email-container {
+//             max-width: 600px;
+//             margin: 0 auto;
+//             background-color: #ffffff;
+//             padding: 20px;
+//           }
+//           .header {
+//             text-align: center;
+//             padding: 20px 0;
+//           }
+//           .header img {
+//             max-width: 150px;
+//           }
+//           .content {
+//             font-size: 16px;
+//             line-height: 1.6;
+//             color: #333333;
+//           }
+//           .content h1 {
+//             font-size: 24px;
+//             color: #333333;
+//           }
+//           .button {
+//             display: inline-block;
+//             padding: 12px 24px;
+//             margin: 20px 0;
+//             background-color: #007bff;
+//             color: #ffffff !important;
+//             text-decoration: none;
+//             border-radius: 4px;
+//             font-weight: bold;
+//           }
+//           .footer {
+//             text-align: center;
+//             font-size: 12px;
+//             color: #999999;
+//             padding: 20px 0;
+//           }
+//           .footer a {
+//             color: #007bff;
+//             text-decoration: none;
+//           }
+//         </style>
+//       </head>
+//       <body>
+//         <div class="email-container">
+//           <div class="header">
+//             <img src="https://yourdomain.com/logo.png" alt="Podio Clone Logo">
+//           </div>
+//           <div class="content">
+//             <h1>You've been invited to join ${
+//               organizationDetails.name
+//             } on Podio Clone!</h1>
+//             <p>Hello,</p>
+//             <p>You've been invited to join a workspace on Podio Clone. Here's a message from the sender:</p>
+//             <p><em>${message}</em></p>
+//             <p>Organization Details:</p>
+//             <ul>
+//               <li>Name: ${organizationDetails.name}</li>
+//               <li>Industry: ${organizationDetails.industry}</li>
+//               <li>Size: ${organizationDetails.size}</li>
+//             </ul>
+//             <p>To accept the invitation and join the workspace, click the button below:</p>
+//             <p style="text-align: center;">
+//               <a href="${invitationLink}" class="button">Accept Invitation</a>
+//             </p>
+//             <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
+//             <p><a href="${invitationLink}">${invitationLink}</a></p>
+//             <p>If you have any questions, feel free to contact our support team.</p>
+//             <p>Best regards,<br>The Podio Clone Team</p>
+//           </div>
+//           <div class="footer">
+//             <p>&copy; ${new Date().getFullYear()} Podio Clone. All rights reserved.</p>
+//             <p>
+//               Podio Clone Inc.<br>
+//               1234 Street Rd.<br>
+//               Suite 1234
+//             </p>
+//             <p>
+//               <a href="https://yourdomain.com/privacy">Privacy Policy</a> |
+//               <a href="https://yourdomain.com/terms">Terms of Service</a>
+//             </p>
+//           </div>
+//         </div>
+//       </body>
+//       </html>
+//       `,
+//     };
+
+//     await transport.sendMail(mailOptions);
+//     console.log("Invitation email sent to:", to);
+//   } catch (error) {
+//     console.error("Error sending invitation email:", error);
+//     throw new Error("Failed to send invitation email");
+//   }
+// }
+
+// Create reusable transporter object using SMTP transport
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD, // Use App Password generated from Google Account
+  },
+});
 
 async function sendInvitationEmail(
   to,
@@ -167,19 +302,16 @@ async function sendInvitationEmail(
   organizationDetails
 ) {
   try {
-    const transport = await createTransport();
-    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:8080";
-
     const mailOptions = {
-      from: `"Podio Clone" <${EMAIL_ADDRESS}>`,
+      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_USER}>`,
       to,
-      subject: "You've been invited to join Podio Clone!",
+      subject: `You've been invited to join ${organizationDetails.name}!`,
       html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>Invitation to Join Podio Clone</title>
+        <title>Invitation to Join ${organizationDetails.name}</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -193,20 +325,9 @@ async function sendInvitationEmail(
             background-color: #ffffff;
             padding: 20px;
           }
-          .header {
-            text-align: center;
-            padding: 20px 0;
-          }
-          .header img {
-            max-width: 150px;
-          }
           .content {
             font-size: 16px;
             line-height: 1.6;
-            color: #333333;
-          }
-          .content h1 {
-            font-size: 24px;
             color: #333333;
           }
           .button {
@@ -219,56 +340,25 @@ async function sendInvitationEmail(
             border-radius: 4px;
             font-weight: bold;
           }
-          .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #999999;
-            padding: 20px 0;
-          }
-          .footer a {
-            color: #007bff;
-            text-decoration: none;
-          }
         </style>
       </head>
       <body>
         <div class="email-container">
-          <div class="header">
-            <img src="https://yourdomain.com/logo.png" alt="Podio Clone Logo">
-          </div>
           <div class="content">
-            <h1>You've been invited to join ${
-              organizationDetails.name
-            } on Podio Clone!</h1>
-            <p>Hello,</p>
-            <p>You've been invited to join a workspace on Podio Clone. Here's a message from the sender:</p>
-            <p><em>${message}</em></p>
+            <h1>Join ${organizationDetails.name}</h1>
+            <p>Hello!</p>
+            <p>You've been invited to join ${organizationDetails.name}.</p>
+            ${message ? `<p>Message: ${message}</p>` : ""}
             <p>Organization Details:</p>
             <ul>
-              <li>Name: ${organizationDetails.name}</li>
               <li>Industry: ${organizationDetails.industry}</li>
               <li>Size: ${organizationDetails.size}</li>
             </ul>
-            <p>To accept the invitation and join the workspace, click the button below:</p>
             <p style="text-align: center;">
               <a href="${invitationLink}" class="button">Accept Invitation</a>
             </p>
-            <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
-            <p><a href="${invitationLink}">${invitationLink}</a></p>
-            <p>If you have any questions, feel free to contact our support team.</p>
-            <p>Best regards,<br>The Podio Clone Team</p>
-          </div>
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Podio Clone. All rights reserved.</p>
-            <p>
-              Podio Clone Inc.<br>
-              1234 Street Rd.<br>
-              Suite 1234
-            </p>
-            <p>
-              <a href="https://yourdomain.com/privacy">Privacy Policy</a> | 
-              <a href="https://yourdomain.com/terms">Terms of Service</a>
-            </p>
+            <p>If the button doesn't work, copy and paste this link:</p>
+            <p>${invitationLink}</p>
           </div>
         </div>
       </body>
@@ -276,12 +366,21 @@ async function sendInvitationEmail(
       `,
     };
 
-    await transport.sendMail(mailOptions);
-    console.log("Invitation email sent to:", to);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully:", info.messageId);
+    return info;
   } catch (error) {
     console.error("Error sending invitation email:", error);
     throw new Error("Failed to send invitation email");
   }
 }
 
+// Test the email configuration on startup
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("Email configuration error:", error);
+  } else {
+    console.log("Email server is ready to send messages");
+  }
+});
 module.exports = { sendVerificationEmail, sendInvitationEmail };

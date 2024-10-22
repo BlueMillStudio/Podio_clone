@@ -120,21 +120,143 @@ router.get("/invitations", authenticateToken, async (req, res) => {
 router.get("/invitations/verify", async (req, res) => {
   const { token } = req.query;
 
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+
   try {
+    console.log("Verifying token:", token);
+
     const result = await db.query(
-      "SELECT * FROM invitations WHERE token = $1 AND expires_at > NOW() AND status = $2",
-      [token, "pending"]
+      `
+      SELECT 
+        i.*,
+        o.name as organization_name,
+        o.industry,
+        o.size
+      FROM invitations i
+      JOIN organizations o ON i.organization_id = o.id
+      WHERE i.token = $1
+      AND i.status = 'pending'
+      AND i.expires_at > NOW()
+    `,
+      [token]
     );
+
+    console.log("Query result:", result.rows);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Invalid or expired invitation" });
     }
 
     const invitation = result.rows[0];
-    res.json({ email: invitation.recipient_email });
+
+    res.json({
+      organization_name: invitation.organization_name,
+      organization_details: {
+        industry: invitation.industry,
+        size: invitation.size,
+      },
+    });
   } catch (error) {
-    console.error("Error verifying invitation:", error);
+    console.error("Verification error:", error);
     res.status(500).json({ error: "Failed to verify invitation" });
+  }
+});
+
+// Accept invitation
+router.post("/invitations/accept", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+
+  try {
+    // Start transaction
+    await db.query("BEGIN");
+
+    // Get invitation details
+    const invitationResult = await db.query(
+      `
+      SELECT 
+        i.*,
+        o.name as organization_name
+      FROM invitations i
+      JOIN organizations o ON i.organization_id = o.id
+      WHERE i.token = $1
+      AND i.status = 'pending'
+      AND i.expires_at > NOW()
+    `,
+      [token]
+    );
+
+    if (invitationResult.rows.length === 0) {
+      await db.query("ROLLBACK");
+      return res.status(404).json({ error: "Invalid or expired invitation" });
+    }
+
+    const invitation = invitationResult.rows[0];
+
+    // Get user info
+    const userResult = await db.query("SELECT * FROM users WHERE email = $1", [
+      invitation.recipient_email,
+    ]);
+
+    if (userResult.rows.length === 0) {
+      await db.query("ROLLBACK");
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+
+    // Add user to organization if not already a member
+    const orgMemberResult = await db.query(
+      `
+      INSERT INTO user_organizations (user_id, organization_id, role)
+      VALUES ($1, $2, 'member')
+      ON CONFLICT (user_id, organization_id) DO NOTHING
+      RETURNING id
+    `,
+      [user.id, invitation.organization_id]
+    );
+
+    // Update invitation status
+    await db.query(
+      `
+      UPDATE invitations 
+      SET status = 'accepted', 
+          accepted_at = NOW()
+      WHERE id = $1
+    `,
+      [invitation.id]
+    );
+
+    await db.query("COMMIT");
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        organizationId: invitation.organization_id,
+        organizationName: invitation.organization_name,
+      },
+    });
+  } catch (error) {
+    await db.query("ROLLBACK");
+    console.error("Accept invitation error:", error);
+    res.status(500).json({ error: "Failed to accept invitation" });
   }
 });
 
