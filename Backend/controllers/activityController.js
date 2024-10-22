@@ -142,7 +142,7 @@ exports.createTask = async (req, res) => {
 
     // Insert new task
     const insertResult = await pool.query(
-      `INSERT INTO tasks (workspace_id, creator_id, assignee_id, title, description, due_date, due_time)
+      `INSERT INTO tasks (workspace_id, created_by, assignee_id, title, description, due_date, due_time)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING id, title, description, status, due_date, due_time, created_at`,
       [

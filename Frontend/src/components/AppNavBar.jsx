@@ -6,11 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
     Activity,
     Briefcase,
-    Calendar,
-    BarChart2,
-    Coins,
-    Lightbulb,
-    User,
+    // Import other icons as needed
 } from 'lucide-react';
 
 const AppNavBar = () => {
@@ -39,6 +35,7 @@ const AppNavBar = () => {
                         },
                     }
                 );
+
 
                 if (response.ok) {
                     const data = await response.json();
@@ -73,18 +70,17 @@ const AppNavBar = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId: workspaceId,
                     name: appData.appName,
-                    fields: [
-                        {
-                            name: appData.itemName,
-                            field_type: 'text',
-                            is_required: true,
-                        },
-                    ],
+                    itemName: appData.itemName,
+                    appType: appData.appType,
+                    appIcon: appData.appIcon,
+                    fields: [], // Include fields as an empty array
                 }),
+
             });
 
             if (response.ok) {
@@ -113,20 +109,12 @@ const AppNavBar = () => {
         }
     };
 
-    const getAppIcon = (appName) => {
-        switch (appName.toLowerCase()) {
-            case 'activity':
+    const getAppIcon = (appIcon) => {
+        switch (appIcon) {
+            case 'ActivityIcon':
                 return <Activity className="h-5 w-5" />;
-            case 'leads & clients':
-                return <User className="h-5 w-5" />;
-            case 'projects':
-                return <BarChart2 className="h-5 w-5" />;
-            case 'meetings':
-                return <Calendar className="h-5 w-5" />;
-            case 'expenses':
-                return <Coins className="h-5 w-5" />;
-            case 'inspiration':
-                return <Lightbulb className="h-5 w-5" />;
+            case 'briefcase':
+                return <Briefcase className="h-5 w-5" />;
             default:
                 return <Briefcase className="h-5 w-5" />;
         }
@@ -143,7 +131,7 @@ const AppNavBar = () => {
     return (
         <>
             <nav className="bg-gray-200 py-2 px-4 border-b border-gray-300">
-                <div className="container mx-auto">
+                <div className="container mx-auto flex justify-between items-center">
                     <div className="flex space-x-4">
                         {apps.map((app) => (
                             <Button
@@ -158,19 +146,19 @@ const AppNavBar = () => {
                                     }
                                 }}
                             >
-                                {getAppIcon(app.name)}
+                                {getAppIcon(app.app_icon)}
                                 <span className="text-xs mt-1">{app.name}</span>
                             </Button>
                         ))}
-                        <Button
-                            variant="ghost"
-                            className="flex flex-col items-center p-1 hover:bg-gray-300 text-teal-600 min-w-[48px]"
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            <Plus className="h-5 w-5" />
-                            <span className="text-xs mt-1">Add App</span>
-                        </Button>
                     </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-teal-600 border-teal-600 hover:bg-teal-50"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        <Plus className="h-4 w-4 mr-1" /> ADD APP
+                    </Button>
                 </div>
             </nav>
             <CreateAppModal

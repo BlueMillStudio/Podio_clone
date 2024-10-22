@@ -1,11 +1,11 @@
 const pool = require('../config/db');
 
-
+// Create App
 exports.createApp = async (req, res) => {
   const userId = req.user.userId;
-  const { workspaceId, name, fields } = req.body;
+  const { workspaceId, name, itemName, appType, appIcon, fields } = req.body;
 
-  if (!workspaceId || !name || !fields || !Array.isArray(fields)) {
+  if (!workspaceId || !name || !itemName || !appType || !appIcon || !fields || !Array.isArray(fields)) {
     return res.status(400).json({ message: 'Invalid input data' });
   }
 
@@ -29,10 +29,10 @@ exports.createApp = async (req, res) => {
     // Start a transaction
     await client.query('BEGIN');
 
-    // Insert into apps table
+    // Insert into apps table, including item_name, app_type, and app_icon
     const appResult = await client.query(
-      'INSERT INTO apps (name, workspace_id, created_by) VALUES ($1, $2, $3) RETURNING *',
-      [name, workspaceId, userId]
+      'INSERT INTO apps (name, workspace_id, item_name, app_type, app_icon, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, workspaceId, itemName, appType, appIcon, userId]
     );
 
     if (!appResult.rows || appResult.rows.length === 0) {
@@ -60,7 +60,7 @@ exports.createApp = async (req, res) => {
     // Commit the transaction
     await client.query('COMMIT');
 
-    // Fetch the complete app details (optional)
+    // Fetch the complete app details
     const createdApp = await client.query(
       'SELECT * FROM apps WHERE id = $1',
       [appId]
@@ -76,7 +76,7 @@ exports.createApp = async (req, res) => {
   }
 };
 
-
+// Get Apps by Workspace
 exports.getAppsByWorkspace = async (req, res) => {
   const userId = req.user.userId;
   const { workspaceId } = req.params;
@@ -85,10 +85,10 @@ exports.getAppsByWorkspace = async (req, res) => {
     // Check if the user has access to the workspace
     const workspaceCheck = await pool.query(
       `SELECT w.id
-         FROM workspaces w
-         INNER JOIN organizations o ON w.organization_id = o.id
-         INNER JOIN user_organizations uo ON o.id = uo.organization_id
-         WHERE w.id = $1 AND uo.user_id = $2`,
+             FROM workspaces w
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE w.id = $1 AND uo.user_id = $2`,
       [workspaceId, userId]
     );
 
@@ -96,7 +96,7 @@ exports.getAppsByWorkspace = async (req, res) => {
       return res.status(403).json({ message: 'You do not have access to this workspace' });
     }
 
-    // Fetch apps
+    // Fetch apps, including item_name
     const appsResult = await pool.query(
       'SELECT * FROM apps WHERE workspace_id = $1',
       [workspaceId]
@@ -109,6 +109,35 @@ exports.getAppsByWorkspace = async (req, res) => {
   }
 };
 
+// Get App Details
+exports.getAppDetails = async (req, res) => {
+  const userId = req.user.userId;
+  const { appId } = req.params;
+
+  try {
+    // Verify user access to the app
+    const appCheck = await pool.query(
+      `SELECT a.*, w.id as workspace_id
+             FROM apps a
+             INNER JOIN workspaces w ON a.workspace_id = w.id
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE a.id = $1 AND uo.user_id = $2`,
+      [appId, userId]
+    );
+
+    if (appCheck.rows.length === 0) {
+      return res.status(403).json({ message: 'You do not have access to this app' });
+    }
+
+    const app = appCheck.rows[0];
+
+    res.status(200).json({ app });
+  } catch (error) {
+    console.error('Error fetching app details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 // Get App Fields
 exports.getAppFields = async (req, res) => {
@@ -144,6 +173,7 @@ exports.getAppFields = async (req, res) => {
   }
 };
 
+// Update App Fields
 exports.updateAppFields = async (req, res) => {
   const userId = req.user.userId;
   const { appId } = req.params;
@@ -213,35 +243,7 @@ exports.updateAppFields = async (req, res) => {
     }
   }
 };
-// Get App Details
-exports.getAppDetails = async (req, res) => {
-  const userId = req.user.userId;
-  const { appId } = req.params;
 
-  try {
-    // Verify user access to the app
-    const appCheck = await pool.query(
-      `SELECT a.id, a.name, w.id as workspace_id
-             FROM apps a
-             INNER JOIN workspaces w ON a.workspace_id = w.id
-             INNER JOIN organizations o ON w.organization_id = o.id
-             INNER JOIN user_organizations uo ON o.id = uo.organization_id
-             WHERE a.id = $1 AND uo.user_id = $2`,
-      [appId, userId]
-    );
-
-    if (appCheck.rows.length === 0) {
-      return res.status(403).json({ message: 'You do not have access to this app' });
-    }
-
-    const app = appCheck.rows[0];
-
-    res.status(200).json({ app });
-  } catch (error) {
-    console.error('Error fetching app details:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 // Get App Items
 exports.getAppItems = async (req, res) => {
   const userId = req.user.userId;
@@ -302,7 +304,7 @@ exports.createAppItem = async (req, res) => {
       return res.status(403).json({ message: 'You do not have access to this app' });
     }
 
-    // Insert new item
+    // Insert the new item
     const insertResult = await pool.query(
       'INSERT INTO app_items (app_id, data) VALUES ($1, $2) RETURNING id, data, created_at, updated_at',
       [appId, data]
@@ -314,6 +316,7 @@ exports.createAppItem = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 // Update App Item
 exports.updateAppItem = async (req, res) => {
   const userId = req.user.userId;
@@ -325,18 +328,27 @@ exports.updateAppItem = async (req, res) => {
   }
 
   try {
-    // Verify user access
-    // Similar verification as before
-
-    // Update item
-    const updateResult = await pool.query(
-      'UPDATE app_items SET data = $1, updated_at = NOW() WHERE id = $2 AND app_id = $3 RETURNING id, data, created_at, updated_at',
-      [data, itemId, appId]
+    // Verify user access to the app and item
+    const itemCheck = await pool.query(
+      `SELECT ai.id
+             FROM app_items ai
+             INNER JOIN apps a ON ai.app_id = a.id
+             INNER JOIN workspaces w ON a.workspace_id = w.id
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE ai.id = $1 AND a.id = $2 AND uo.user_id = $3`,
+      [itemId, appId, userId]
     );
 
-    if (updateResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Item not found' });
+    if (itemCheck.rows.length === 0) {
+      return res.status(403).json({ message: 'You do not have access to this item' });
     }
+
+    // Update the item
+    const updateResult = await pool.query(
+      'UPDATE app_items SET data = $1, updated_at = NOW() WHERE id = $2 RETURNING id, data, created_at, updated_at',
+      [data, itemId]
+    );
 
     res.status(200).json({ item: updateResult.rows[0] });
   } catch (error) {
@@ -351,18 +363,24 @@ exports.deleteAppItem = async (req, res) => {
   const { appId, itemId } = req.params;
 
   try {
-    // Verify user access
-    // Similar verification as before
-
-    // Delete item
-    const deleteResult = await pool.query(
-      'DELETE FROM app_items WHERE id = $1 AND app_id = $2 RETURNING id',
-      [itemId, appId]
+    // Verify user access to the app and item
+    const itemCheck = await pool.query(
+      `SELECT ai.id
+             FROM app_items ai
+             INNER JOIN apps a ON ai.app_id = a.id
+             INNER JOIN workspaces w ON a.workspace_id = w.id
+             INNER JOIN organizations o ON w.organization_id = o.id
+             INNER JOIN user_organizations uo ON o.id = uo.organization_id
+             WHERE ai.id = $1 AND a.id = $2 AND uo.user_id = $3`,
+      [itemId, appId, userId]
     );
 
-    if (deleteResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Item not found' });
+    if (itemCheck.rows.length === 0) {
+      return res.status(403).json({ message: 'You do not have access to this item' });
     }
+
+    // Delete the item
+    await pool.query('DELETE FROM app_items WHERE id = $1', [itemId]);
 
     res.status(200).json({ message: 'Item deleted successfully' });
   } catch (error) {

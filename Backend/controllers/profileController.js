@@ -19,7 +19,7 @@ exports.completeProfile = async (req, res) => {
 
     // Create organization
     const orgResult = await pool.query(
-      "INSERT INTO organizations (name, industry, size, creator_id) VALUES ($1, $2, $3, $4) RETURNING id",
+      "INSERT INTO organizations (name, industry, size, created_by) VALUES ($1, $2, $3, $4) RETURNING id",
       [companyName, industry, organizationSize, userId]
     );
     const orgId = orgResult.rows[0].id;
@@ -32,14 +32,14 @@ exports.completeProfile = async (req, res) => {
 
     // Create Employee Network workspace
     const employeeWorkspaceResult = await pool.query(
-      "INSERT INTO workspaces (name, organization_id, creator_id) VALUES ($1, $2, $3) RETURNING id",
+      "INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3) RETURNING id",
       ["Employee Network", orgId, userId]
     );
     const employeeWorkspaceId = employeeWorkspaceResult.rows[0].id;
 
     // Create Demo Workspace
     const demoWorkspaceResult = await pool.query(
-      "INSERT INTO workspaces (name, organization_id, creator_id) VALUES ($1, $2, $3) RETURNING id",
+      "INSERT INTO workspaces (name, organization_id, created_by) VALUES ($1, $2, $3) RETURNING id",
       ["Demo Workspace", orgId, userId]
     );
     const demoWorkspaceId = demoWorkspaceResult.rows[0].id;
@@ -81,7 +81,7 @@ exports.completeProfile = async (req, res) => {
     for (const appTemplate of defaultApps) {
       // Insert into apps table
       const appResult = await pool.query(
-        "INSERT INTO apps (name, workspace_id, creator_id) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO apps (name, workspace_id, created_by) VALUES ($1, $2, $3) RETURNING id",
         [appTemplate.name, demoWorkspaceId, userId]
       );
       const appId = appResult.rows[0].id;
