@@ -14,18 +14,36 @@ const PodioTaskManagement = () => {
   const [users, setUsers] = useState([]);
   const [loggedUserId, setLoggedUserId] = useState(null);
 
+  // Separate useEffect for setting the logged user ID
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setLoggedUserId(decodedToken.userId);
+    const initializeUser = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          setLoggedUserId(decodedToken.userId);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          toast.error("Authentication error. Please login again.");
+        }
+      }
+    };
+
+    initializeUser();
+  }, []); // Run only once on component mount
+
+  // Separate useEffect for fetching data that depends on loggedUserId
+  useEffect(() => {
+    if (loggedUserId) {
+      // Only fetch if we have a logged user ID
+      fetchUsers();
+      fetchTasks();
     }
-    console.log(loggedUserId);
-    fetchTasks();
-    fetchUsers();
-  }, []);
+  }, [loggedUserId]); // Run when loggedUserId changes
 
   const fetchTasks = async () => {
+    if (!loggedUserId) return; // Guard clause
+
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -40,7 +58,7 @@ const PodioTaskManagement = () => {
       );
 
       setTasks(userTasks);
-      console.log(userTasks);
+      console.log("User Tasks:", userTasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Failed to fetch tasks. Please try again.");
@@ -50,6 +68,8 @@ const PodioTaskManagement = () => {
   };
 
   const fetchUsers = async () => {
+    if (!loggedUserId) return; // Guard clause
+
     try {
       const response = await axios.get("http://localhost:5000/api/users", {
         headers: {
@@ -63,6 +83,7 @@ const PodioTaskManagement = () => {
     }
   };
 
+  // Custom hook to handle task updates
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   };
@@ -74,8 +95,14 @@ const PodioTaskManagement = () => {
   };
 
   const filterTasks = (status) => {
+    if (!tasks) return [];
     return tasks.filter((task) => task.status === status);
   };
+
+  // Loading state while user ID is being fetched
+  if (!loggedUserId) {
+    return <div>Initializing...</div>;
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -101,7 +128,11 @@ const PodioTaskManagement = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TaskForm onTaskCreated={handleTaskCreated} users={users} />
+            <TaskForm
+              onTaskCreated={handleTaskCreated}
+              users={users}
+              loggedUserId={loggedUserId} // Pass loggedUserId to TaskForm
+            />
 
             <TabsContent value="my-tasks">
               <h2 className="text-xl font-semibold mb-2">My Tasks</h2>
@@ -111,6 +142,7 @@ const PodioTaskManagement = () => {
                 <TaskList
                   tasks={filterTasks("pending")}
                   onTaskUpdate={handleTaskUpdate}
+                  loggedUserId={loggedUserId} // Pass loggedUserId to TaskList
                 />
               )}
             </TabsContent>
@@ -123,6 +155,7 @@ const PodioTaskManagement = () => {
                 <TaskList
                   tasks={filterTasks("delegated")}
                   onTaskUpdate={handleTaskUpdate}
+                  loggedUserId={loggedUserId}
                 />
               )}
             </TabsContent>
@@ -135,6 +168,7 @@ const PodioTaskManagement = () => {
                 <TaskList
                   tasks={filterTasks("completed")}
                   onTaskUpdate={handleTaskUpdate}
+                  loggedUserId={loggedUserId}
                 />
               )}
             </TabsContent>
@@ -149,13 +183,14 @@ const PodioTaskManagement = () => {
                 <TaskList
                   tasks={filterTasks("completed")}
                   onTaskUpdate={handleTaskUpdate}
+                  loggedUserId={loggedUserId}
                 />
               )}
             </TabsContent>
           </Tabs>
         </div>
         <div className="w-1/4">
-          <LabelSection />
+          <LabelSection loggedUserId={loggedUserId} />
         </div>
       </div>
     </div>

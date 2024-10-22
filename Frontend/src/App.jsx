@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
@@ -9,11 +9,12 @@ import Register from "./components/Register";
 import Task from "./components/Task";
 import VerifyEmail from "./components/VerifyEmail";
 import ProfileCompletion from "./components/ProfileCompletion";
-import WorkspaceView from './components/WorkspaceView';
-import CreateAppPage from './components/CreateAppPage';
-import ActivityApp from './components/ActivityApp';
-import CustomizeAppTemplate from './components/CustomizeAppTemplate';
-import AppDetails from './components/AppDetails';
+import WorkspaceView from "./components/WorkspaceView";
+import CreateAppPage from "./components/CreateAppPage";
+import ActivityApp from "./components/ActivityApp";
+import CustomizeAppTemplate from "./components/CustomizeAppTemplate";
+import AppDetails from "./components/AppDetails";
+import Join from "./pages/Join";
 
 const App = () => (
   <BrowserRouter>
@@ -30,14 +31,29 @@ const App = () => (
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/connections" element={<Connections />} />
         <Route path="/task" element={<Task />} />
-
         {/* Workspace routes */}
         <Route path="/workspaces/:workspaceId" element={<WorkspaceView />} />
-        <Route path="/workspaces/:workspaceId/apps/new" element={<CreateAppPage />} />
-        <Route path="/workspaces/:workspaceId/apps/activity" element={<ActivityApp />} />
-        <Route path="/workspaces/:workspaceId/apps/:appId/customize" element={<CustomizeAppTemplate />} />
-        <Route path="/workspaces/:workspaceId/apps/:appId" element={<AppDetails />} /> {/* Optional */}
+        <Route
+          path="/workspaces/:workspaceId/apps/new"
+          element={<CreateAppPage />}
+        />
+        <Route
+          path="/workspaces/:workspaceId/apps/activity"
+          element={<ActivityApp />}
+        />
+        <Route
+          path="/workspaces/:workspaceId/apps/:appId/customize"
+          element={<CustomizeAppTemplate />}
+        />
+        <Route
+          path="/workspaces/:workspaceId/apps/:appId"
+          element={<AppDetails />}
+        />{" "}
+        {/* Optional */}
       </Route>
+
+      {/* Join route */}
+      <Route path="/join" element={<Join />} />
     </Routes>
   </BrowserRouter>
 );

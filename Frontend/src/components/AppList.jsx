@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 
 const AppList = () => {
   const { workspaceId } = useParams();
@@ -9,18 +9,21 @@ const AppList = () => {
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          navigate('/login');
+          navigate("/login");
           return;
         }
 
-        const response = await fetch(`http://localhost:5000/api/apps/workspace/${workspaceId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/apps/workspace/${workspaceId}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -28,11 +31,11 @@ const AppList = () => {
           setLoading(false);
         } else {
           const errorData = await response.json();
-          console.error('Error fetching apps:', errorData.message);
+          console.error("Error fetching apps:", errorData.message);
           setLoading(false);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         setLoading(false);
       }
     };
@@ -60,7 +63,10 @@ const AppList = () => {
           ))}
         </ul>
       )}
-      <Link to={`/workspaces/${workspaceId}/apps/new`} className="btn btn-primary mt-4">
+      <Link
+        to={`/workspaces/${workspaceId}/apps/new`}
+        className="btn btn-primary mt-4"
+      >
         Create New App
       </Link>
     </div>
