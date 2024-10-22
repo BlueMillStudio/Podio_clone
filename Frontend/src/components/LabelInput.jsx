@@ -27,7 +27,7 @@ const LabelInput = ({ labels, setLabels }) => {
         {labels.map((label, index) => (
           <span
             key={index}
-            className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"
+            className="bg-teal-100 text-teal-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"
           >
             {label}
             <button

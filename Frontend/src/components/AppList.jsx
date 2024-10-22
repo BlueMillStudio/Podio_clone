@@ -56,10 +56,7 @@ const AppList = () => {
         <ul>
           {apps.map((app) => (
             <li key={app.id} className="mb-4">
-              <Link
-                to={`/workspaces/${workspaceId}/apps/${app.id}`}
-                className="text-blue-600"
-              >
+              <Link to={`/workspaces/${workspaceId}/apps/${app.id}`} className="text-teal-600">
                 {app.name}
               </Link>
             </li>
