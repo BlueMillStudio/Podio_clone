@@ -6,7 +6,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
     Activity,
     Briefcase,
-    // Import other icons as needed
+    Calendar,
+    BarChart2,
+    Coins,
+    Lightbulb,
+    User,
 } from 'lucide-react';
 
 const AppNavBar = () => {
@@ -35,7 +39,6 @@ const AppNavBar = () => {
                         },
                     }
                 );
-
 
                 if (response.ok) {
                     const data = await response.json();
@@ -70,17 +73,18 @@ const AppNavBar = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
-                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     workspaceId: workspaceId,
                     name: appData.appName,
-                    itemName: appData.itemName,
-                    appType: appData.appType,
-                    appIcon: appData.appIcon,
-                    fields: [], // Include fields as an empty array
+                    fields: [
+                        {
+                            name: appData.itemName,
+                            field_type: 'text',
+                            is_required: true,
+                        },
+                    ],
                 }),
-
             });
 
             if (response.ok) {
@@ -112,19 +116,19 @@ const AppNavBar = () => {
     const getAppIcon = (appName) => {
         switch (appName.toLowerCase()) {
             case 'activity':
-                return <Activity className="h-6 w-6" />;
+                return <Activity className="h-5 w-5" />;
             case 'leads & clients':
-                return <User className="h-6 w-6" />;
+                return <User className="h-5 w-5" />;
             case 'projects':
-                return <BarChart2 className="h-6 w-6" />;
+                return <BarChart2 className="h-5 w-5" />;
             case 'meetings':
-                return <Calendar className="h-6 w-6" />;
+                return <Calendar className="h-5 w-5" />;
             case 'expenses':
-                return <Coins className="h-6 w-6" />;
+                return <Coins className="h-5 w-5" />;
             case 'inspiration':
-                return <Lightbulb className="h-6 w-6" />;
+                return <Lightbulb className="h-5 w-5" />;
             default:
-                return <Briefcase className="h-6 w-6" />;
+                return <Briefcase className="h-5 w-5" />;
         }
     };
 
@@ -154,7 +158,7 @@ const AppNavBar = () => {
                                     }
                                 }}
                             >
-                                {getAppIcon(app.app_icon)}
+                                {getAppIcon(app.name)}
                                 <span className="text-xs mt-1">{app.name}</span>
                             </Button>
                         ))}
