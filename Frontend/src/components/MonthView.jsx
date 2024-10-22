@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TaskTooltip from "./TaskTooltip";
 
 const MonthView = ({ date, tasks }) => {
   const days = eachDayOfInterval({
@@ -26,11 +27,15 @@ const MonthView = ({ date, tasks }) => {
   });
 
   const getTasksForDate = (day) => {
-    return tasks.filter((task) => isSameDay(new Date(task.due_date), day));
+    return tasks.filter(
+      (task) => task.due_date && isSameDay(new Date(task.due_date), day)
+    );
   };
 
+  const userId = JSON.parse(localStorage.getItem("user"))?.id;
+
   return (
-    <div className="grid grid-cols-7">
+    <div className="grid grid-cols-7 border-l border-t">
       {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
         <div
           key={day}
@@ -43,13 +48,13 @@ const MonthView = ({ date, tasks }) => {
       {days.map((day, idx) => (
         <div
           key={idx}
-          className={`border-b border-r h-24 ${
-            !isSameMonth(day, date) ? "text-gray-400 bg-gray-100" : ""
-          } ${isToday(day) ? "bg-yellow-50" : ""}`}
+          className={`border-b border-r min-h-[120px] ${
+            !isSameMonth(day, date) ? "text-gray-400 bg-gray-50" : ""
+          } ${isToday(day) ? "bg-blue-50" : ""}`}
         >
           <div className="p-2">
             <div className="font-semibold">{format(day, "d")}</div>
-            <ScrollArea className="h-16 mt-1">
+            <ScrollArea className="h-20 mt-1">
               {getTasksForDate(day).map((task) => (
                 <TooltipProvider key={task.id}>
                   <Tooltip>
@@ -57,29 +62,18 @@ const MonthView = ({ date, tasks }) => {
                       <div className="mb-1">
                         <Badge
                           variant="outline"
-                          className="text-xs truncate w-full"
+                          className={`text-xs truncate w-full ${
+                            task.creator_id === userId
+                              ? "bg-blue-50"
+                              : "bg-green-50"
+                          }`}
                         >
                           {task.title}
                         </Badge>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div>
-                        <p className="font-semibold">{task.title}</p>
-                        <p className="text-sm">{task.description}</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {task.labels &&
-                            task.labels.map((label, index) => (
-                              <Badge
-                                key={index}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {label}
-                              </Badge>
-                            ))}
-                        </div>
-                      </div>
+                      <TaskTooltip task={task} />
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

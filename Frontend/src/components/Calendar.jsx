@@ -19,6 +19,7 @@ const Calendar = () => {
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState("month");
   const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchTasks();
@@ -26,7 +27,7 @@ const Calendar = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/tasks", {
+      const response = await axios.get("http://localhost:5000/api/tasks/user", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -35,6 +36,8 @@ const Calendar = () => {
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Failed to fetch tasks. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,6 +96,10 @@ const Calendar = () => {
       </div>
     </div>
   );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="p-4 h-[calc(100vh-4rem)] flex flex-col bg-white">
